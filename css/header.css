@@ -1,0 +1,194 @@
+@import '../css/general.css';
+
+/* Nav bar */
+
+.nav {
+  width: 100%;
+  height: 75px;
+  position: fixed;
+  top: 0;
+  z-index: 9;
+  background-color: gray;
+}
+
+.nav .container {
+  height: 100%;
+}
+
+.nav-left {
+  display: flex;
+  align-items: center;
+  overflow: hidden;
+}
+
+.nav-left img {
+  width: 100%;
+  object-fit: fill;
+  object-position: center;
+  cursor: pointer;
+}
+
+.nav-mid {
+  width: 75%;
+}
+
+.nav-mid > ul {
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.nav-mid > ul > li {
+  font-size: 14px;
+  font-weight: 600;
+  margin: 0 8px;
+  cursor: pointer;
+  height: 70%;
+  width: 100px;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.nav-mid > ul > li > i {
+  margin-left: 5px;
+  margin-bottom: 8px;
+}
+
+.nav-right {
+  width: 350px;
+}
+
+/* Search box */
+
+.search_box {
+  overflow: hidden;
+  position: relative;
+  width: 32px;
+  height: 32px;
+  border-radius: 12px;
+  border: none;
+  transition: all 0.5s ease;
+  margin: 0 15px;
+}
+
+.search_box_input {
+  width: 100%;
+  height: 100%;
+  border: none;
+  outline: none;
+  color: #000;
+  font-size: 14px;
+  padding: 0 50px 0 20px;
+}
+
+.search_box button {
+  position: absolute;
+  border: none;
+  outline: none;
+  width: 32px;
+  height: 32px;
+  cursor: pointer;
+  font-size: 18px;
+  top: 0;
+  right: 0;
+  background-color: #fff;
+}
+
+.search_box.open {
+  width: 200px;
+  border: 1px solid #ccc;
+}
+
+.cart {
+  position: relative;
+  height: 60%;
+  align-items: center;
+  display: flex;
+}
+
+.cart_noti {
+  position: absolute;
+  top: -10px;
+  left: 10px;
+  width: 18px;
+  height: 18px;
+  border-radius: 50%;
+  background: var(--primary_color);
+  color: #fff;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 10px;
+}
+
+/* Drop down nav */
+
+.nav-mid > ul > li {
+  position: relative;
+}
+
+.nav-mid > ul > li:hover {
+  color: var(--primary_color);
+}
+
+/* Brand */
+
+.brand {
+  position: absolute;
+  top: 52px;
+  left: -200%;
+  z-index: 9;
+  background: #fff;
+  box-shadow: 5px -3px 5px 0px rgba(171, 171, 171, 0.5);
+  padding: 15px;
+  border: 0.5px solid var(--line_color);
+  display: none;
+  flex-wrap: wrap;
+  min-width: 1000px;
+  animation: navAni linear 0.5s;
+}
+
+@keyframes navAni {
+  0% {
+    opacity: 0;
+    transform: translateY(30px);
+  }
+
+  100% {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.brand-list:hover .brand {
+  display: flex;
+}
+
+.brand img {
+  height: 100px;
+  width: 150px;
+  object-fit: contain;
+}
+.brand div {
+  margin: 5px;
+}
+
+/* Bread-crumb */
+
+.bread-crumb {
+  margin-top: 100px;
+  margin-bottom: 30px;
+}
+.bread-crumb ul li {
+  display: inline;
+  margin-right: 10px;
+  text-transform: uppercase;
+}
+.bread-crumb ul li i,
+.bread-crumb ul li span {
+  color: #7d7d7d;
+  text-decoration: none;
+  font-weight: 500;
+}
