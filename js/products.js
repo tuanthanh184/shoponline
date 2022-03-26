@@ -3,17 +3,13 @@ import { header } from './module/header.js';
 import { alertMess } from './module/alert.js';
 
 componentHTML();
-console.log(sessionStorage);
-localStorage.setItem('currentPage', 1);
-var squareBtn = document.querySelector('.square');
-var pillarBtn = document.querySelector('.pillar');
 
-let idPage = 1;
-let start = 0;
+// Square mode and Pillar mode
+const squareBtn = document.querySelector('.square');
+const pillarBtn = document.querySelector('.pillar');
 
-var productList = [];
-var productListToFliter = [];
-pillarBtn.addEventListener('click', function () {
+// Show Pillar hide Square
+pillarBtn.addEventListener('click', () => {
   document.querySelector('.content_container_main').classList.add('hide');
   document
     .querySelector('.content_container_main_pillar')
@@ -24,7 +20,8 @@ pillarBtn.addEventListener('click', function () {
   }
 });
 
-squareBtn.addEventListener('click', function () {
+// Show Square hide Pillar
+squareBtn.addEventListener('click', () => {
   document.querySelector('.content_container_main').classList.remove('hide');
   document
     .querySelector('.content_container_main_pillar')
@@ -35,63 +32,97 @@ squareBtn.addEventListener('click', function () {
   }
 });
 
-//search filter làm nút tìm kiếm giống W3 school chỉ search được trong 1 trang
-function search() {
-  // Declare variables
-  var input, filter, main, infor, p, i, txtValue;
-  input = document.getElementById('myInput');
-  filter = input.value.toUpperCase();
-  if (squareBtn.classList.contains('active')) {
-    main = document.querySelector('.content_container_main');
-    infor = main.getElementsByClassName('content_container_item');
-    for (i = 0; i < infor.length; i++) {
-      p = infor[i].getElementsByClassName('title')[0];
-      txtValue = p.textContent || p.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        infor[i].style.display = '';
-      } else {
-        infor[i].style.display = 'none';
-      }
-    }
-  } else {
-    main = document.querySelector('.content_container_main_pillar');
-    infor = main.getElementsByClassName('content_container_item_pillar');
+// var arr = ['apple', 'mango', 'apple', 'orange', 'mango', 'mango'];
 
-    for (i = 0; i < infor.length; i++) {
-      p = infor[i].getElementsByClassName('title')[0];
-      txtValue = p.textContent || p.innerText;
-      if (txtValue.toUpperCase().indexOf(filter) > -1) {
-        infor[i].style.display = '';
-      } else {
-        infor[i].style.display = 'none';
-      }
-    }
-  }
-}
+// function removeDuplicates(arr) {
+//   return arr.filter((item, index) => {
+//     console.log(arr.indexOf(item), index);
+//     return arr.indexOf(item) === index;
+//   });
+// }
 
-// Render Best Sale
-function RenderBestSale() {
+// console.log(removeDuplicates(arr));
+// Get and render Brands
+function RenderBrand() {
   axios
-    .get('http://localhost/be/DataList/TopSales.php')
+    .get('http://localhost/BE/DataList/ProductList.php')
     .then((e) => e.data)
     .then((e) => {
-      let html = '';
-      document.querySelector('.SideBar_bestseller_content').innerHTML = '';
-      e.forEach((item) => {
-        html += `<li class="row">
-                            <div class="col-4">
-                                <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}" alt=""></a>
-                            </div>
-                            <div class="col-8">
-                                <p><a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a></p>
-                                <p>$<span>${item.price}</span></p>
-                            </div>
-                        </li>`;
-      });
-      document.querySelector('.SideBar_bestseller_content').innerHTML += html;
+      // console.log(e);
+      let rawBrandList = e.map((item) => item.brand); // Get an array of brands
+      // Remove duplicates brands
+      let brandList = rawBrandList.filter(
+        (item, index) => rawBrandList.indexOf(item) === index
+      );
+      console.log(brandList);
+
+      // var html1 = '';
+      // e.forEach((item) => {
+      //   html1 += `<li brandid="${item.id}" class="${item.name}"><span>${item.name}</span><span>(${item.quantity})</span></li>`;
+      // });
+      // document.querySelector('.SideBar_Color').outerHTML = html1;
+      // setTimeout(() => {
+      //   let dom = document.querySelectorAll('li[brandid]');
+      //   dom.forEach((item) => {
+      //     item.onclick = () => {
+      //       renderProductsByBrands(item.getAttribute('brandid'));
+      //     };
+      //   });
+      // }, 1000);
     });
 }
 
+// Render Prodcut by Brand
+function renderProductsByBrands(brandid) {
+  localStorage.setItem('currentPage', 1);
+
+  let data = new FormData();
+  data.append('brand', brandid);
+  axios
+    .post('http://localhost/be/DataList/ProductFilters.php', data)
+    .then((e) => {
+      document.querySelector('.content_container_main').innerHTML = '';
+      document.querySelector('.content_container_main_pillar').innerHTML = '';
+      document.querySelector('.content_container_title_right').innerHTML = '';
+      renderContent(e.data);
+    });
+}
+
+// Get and render 5 bestseller Items
+function renderBestSeller(limitItem) {
+  axios
+    .get('http://localhost/BE/DataList/ProductList.php')
+    .then((e) => e.data)
+    .then((e) => {
+      let soldList = e
+        .sort((a, b) => b.sold - a.sold) // Sort item.sold by desc order
+        .slice(0, limitItem); // Get top 5 item.sold
+
+      let htmlBestSeller = soldList.reduce(
+        (html, item) =>
+          html +
+          `<li class="row">
+              <div class="col-4">
+                  <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}" alt=""></a>
+              </div>
+              <div class="col-8">
+                  <p><a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a></p>
+                  <p>$<span>${item.price}</span></p>
+              </div>
+            </li>`,
+        ''
+      );
+      const bestSellerContent = document.querySelector('.bestseller-js');
+      bestSellerContent.innerHTML = htmlBestSeller;
+    });
+}
+
+localStorage.setItem('currentPage', 1);
+let idPage = 1;
+let start = 0;
+
+var productList = [];
+var productListToFliter = [];
 // Làm 2 nút chuyển trang
 var check = 0;
 const previousBtn = document.querySelector('.previousbtn');
@@ -134,7 +165,7 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
       } else {
         previousBtn.disabled = false;
       }
-      console.log(listProducts);
+      // console.log(listProducts);
       productsPerPage == 'empty' ? '' : (listProducts = productsPerPage);
       listProducts.forEach((item, i) => {
         if (i >= start && i < end) {
@@ -257,28 +288,6 @@ function clickBtnChoosePage(e) {
     top: 400,
     behavior: 'smooth',
   });
-}
-
-//Lay va in ra brand
-function RenderBrand() {
-  axios
-    .get('http://localhost/BE/DataList/Brands.php')
-    .then((e) => e.data)
-    .then((e) => {
-      var html1 = '';
-      e.forEach((item) => {
-        html1 += `<li brandid="${item.id}" class="${item.name}"><span>${item.name}</span><span>(${item.quantity})</span></li>`;
-      });
-      document.querySelector('.SideBar_Color').outerHTML = html1;
-      setTimeout(() => {
-        let dom = document.querySelectorAll('li[brandid]');
-        dom.forEach((item) => {
-          item.onclick = () => {
-            renderProductsByBrands(item.getAttribute('brandid'));
-          };
-        });
-      }, 1000);
-    });
 }
 
 // Làm nút tìm kiếm the giá sản phẩm Filter
@@ -452,7 +461,7 @@ axios
     localStorage.setItem('wishlist', e);
   });
 
-RenderBestSale();
+renderBestSeller(5);
 RenderBrand();
 
 if (localStorage.getItem('brandid')) {
@@ -477,23 +486,6 @@ function renderProductsByCategories(cateid) {
 
   let data = new FormData();
   data.append('cateid', cateid);
-  axios
-    .post('http://localhost/be/DataList/ProductFilters.php', data)
-    .then((e) => {
-      document.querySelector('.content_container_main').innerHTML = '';
-      document.querySelector('.content_container_main_pillar').innerHTML = '';
-      document.querySelector('.content_container_title_right').innerHTML = '';
-      // document.querySelector(".SideBar_bestseller_content").innerHTML = '';
-      renderContent(e.data);
-    });
-}
-
-// Render Prodcut by Brand
-function renderProductsByBrands(brandid) {
-  localStorage.setItem('currentPage', 1);
-
-  let data = new FormData();
-  data.append('brand', brandid);
   axios
     .post('http://localhost/be/DataList/ProductFilters.php', data)
     .then((e) => {
