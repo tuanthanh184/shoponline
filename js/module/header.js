@@ -1,14 +1,19 @@
 function header() {
-  renderBrands();
+  return new Promise((resolve, reject) => {
+    setTimeout(() => {
+      renderBrands();
+      countItemCart();
 
-  // Làm nút search
-  var searchBtn = document.querySelector('.search_box_btn');
-  searchBtn.addEventListener('click', function () {
-    this.parentElement.classList.toggle('open');
-    this.previousElementSibling.focus();
+      // Làm nút search
+      var searchBtn = document.querySelector('.search_box_btn');
+      searchBtn.addEventListener('click', function () {
+        this.parentElement.classList.toggle('open');
+        this.previousElementSibling.focus();
+      });
+      resolve('Load content success!');
+      reject('Load content failed!');
+    }, 1000);
   });
-
-  countItemCart();
 }
 
 function renderBrands() {

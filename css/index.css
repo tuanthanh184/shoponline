@@ -425,10 +425,14 @@
   font-weight: bold;
 }
 
-.content_container_item_pillar_content_title {
-  font-size: 15px;
+.item_pillar_content_detail {
+  font-size: 16px;
   color: var(--text_color);
   margin: 10px 0;
+  display: -webkit-box;
+  -webkit-box-orient: vertical;
+  -webkit-line-clamp: 3;
+  overflow: hidden;
 }
 
 .content_container_item_pillar_content_btn button {

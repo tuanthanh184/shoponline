@@ -2,9 +2,7 @@ import { componentHTML } from './module/components.js';
 import { header } from './module/header.js';
 import { alertMess } from './module/alert.js';
 
-componentHTML();
-
-// Square mode and Pillar mode
+// Square display and Pillar display
 const squareBtn = document.querySelector('.square');
 const pillarBtn = document.querySelector('.pillar');
 
@@ -28,6 +26,11 @@ squareBtn.addEventListener('click', () => {
   }
 });
 
+(async () => {
+  await componentHTML();
+  await header();
+})();
+
 // Get and render Brands
 function renderBrand() {
   axios
@@ -50,19 +53,9 @@ function renderBrand() {
       }
       const brandListRender = document.querySelector('.SideBar_content');
       brandListRender.innerHTML += htmlBrandList;
-
-      // Render products by Brand
-
-      // setTimeout(() => {
-      //   let dom = document.querySelectorAll('li[brandid]');
-      //   dom.forEach((item) => {
-      //     item.onclick = () => {
-      //       renderProductsByBrands(item.getAttribute('brandid'));
-      //     };
-      //   });
-      // }, 1000);
     })
     .then(() => {
+      // Render Products by Brands
       axios
         .get('http://localhost/BE/DataList/ProductList.php')
         .then((e) => e.data)
@@ -72,8 +65,12 @@ function renderBrand() {
             liElement.addEventListener('click', () => {
               let BrandValDOM =
                 liElement.querySelector('.brand-name').innerText;
-              let fil = e.filter((item) => item.brand === BrandValDOM);
-              console.log(fil);
+              let filterBrands = e.filter((item) => item.brand === BrandValDOM);
+              renderProducts({
+                renderList: filterBrands,
+                square: '.main-content__square',
+                pillar: '.main-content__pillar',
+              });
             });
           });
         });
@@ -81,21 +78,81 @@ function renderBrand() {
 }
 renderBrand();
 
-// Render Prodcut by Brand
-function renderProductsByBrands(brandid) {
-  localStorage.setItem('currentPage', 1);
-
-  let data = new FormData();
-  data.append('brand', brandid);
-  axios
-    .post('http://localhost/be/DataList/ProductFilters.php', data)
-    .then((e) => {
-      document.querySelector('.main-content__square').innerHTML = '';
-      document.querySelector('.main-content__pillar').innerHTML = '';
-      document.querySelector('.number-pagination').innerHTML = '';
-      renderContent(e.data);
-    });
+// Render Products
+function renderProducts(options) {
+  // Square display
+  let htmlSquare = options.renderList.reduce(
+    (html, item) =>
+      html +
+      `<div class="col-6 col-lg-4 content_container_item">
+        <div class="content_container_item_border">
+          <div class="content_container_item_show">
+            <img src=${item.src}>
+            <div class="content_container_item_show_infor">
+                <p class="title">${item.name}</p>
+                <p>$<span>${item.price}</span></p>
+            </div>
+          </div>
+          <div class="content_container_item_hover">
+            <li>
+              <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
+            </li>
+            <li>
+              <button class="add_cart" productid="${item.id}">Add to cart</button>
+              <button class="add_tym" productid="${item.id}"><i class="far fa-heart"></i></button>
+            </li>
+          </div>
+        </div>
+      </div>`,
+    ''
+  );
+  document.querySelector(options.square).innerHTML = htmlSquare;
+  // Pillar display
+  let htmlPillar = options.renderList.reduce((html, item) => {
+    html += `<div class="content_container_item_pillar ">
+        <div class="content_container_item_pillar_img">
+          <img src=${item.src}>
+          <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
+        </div>
+        <div class="content_container_item_pillar_content d-flex flex-column justify-content-between">
+          <div>
+            <h2 productid="${item.id}" >${item.name}</h2>
+            <div class="content_container_item_pillar_star">`;
+    for (let i = 0; i < Math.round(item.rating); ++i) {
+      html += `<i class="fa fa-star checked"></i>`;
+    }
+    for (let i = 0; i < 5 - Math.round(item.rating); ++i) {
+      html += `<i class="fa fa-star"></i>`;
+    }
+    html += `</div>
+            <div class="content_container_item_pillar_price">
+              <span>$${item.price}</span>
+            </div>
+            <div class="item_pillar_content_detail">
+                <p>${item.detail}</p>
+            </div>
+          </div>
+          <div class="content_container_item_pillar_content_btn">
+            <button class="add_cart" productid="${item.id}">Add to cart</button>
+            <button class="add_tym" productid="${item.id}"><i class="far fa-heart"></i></button>
+          </div>
+        </div>
+      </div>`;
+    return html;
+  }, '');
+  document.querySelector(options.pillar).innerHTML = htmlPillar;
 }
+
+axios
+  .get('http://localhost/BE/DataList/ProductList.php')
+  .then((e) => e.data)
+  .then((e) => {
+    renderProducts({
+      renderList: e,
+      square: '.main-content__square',
+      pillar: '.main-content__pillar',
+    });
+  });
 
 // Get and render 5 bestseller Items
 function renderBestSeller(limitItem) {
@@ -158,7 +215,6 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
       productList = e;
       listProducts == 'empty' ? (listProducts = e) : '';
       listProducts == 'empty' ? '' : (productListToFliter = listProducts);
-      var html3 = '';
       var select = document.getElementById('show_items');
       var perPage = select.options[select.selectedIndex].value;
       let end = perPage * idPage;
@@ -174,91 +230,6 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
       } else {
         previousBtn.disabled = false;
       }
-      var html2 = '';
-      // console.log(listProducts);
-      productsPerPage == 'empty' ? '' : (listProducts = productsPerPage);
-      listProducts.forEach((item, i) => {
-        if (i >= start && i < end) {
-          html2 += `<div class="col-6 col-lg-4 content_container_item">
-              <div class="content_container_item_border">
-                  <div class="content_container_item_show">
-                      <img src=${listProducts[i].src}>
-                      <div class="content_container_item_show_infor">
-                          <p class="title">${listProducts[i].name}</p>
-                          <p>$<span>${listProducts[i].price}</span></p>
-                      </div>
-                  </div>
-                  <div class="content_container_item_hover">
-                  <li>
-                  <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
-                      </li>
-                      <li>
-                      <button class="add_cart" productid="${item.id}">Add to cart</button>`;
-          if (
-            !localStorage
-              .getItem('wishlist')
-              .split(',')
-              .includes(item.id.toString())
-          ) {
-            html2 += `<button class="add_tym" productid="${item.id}"><i class="far fa-heart"></i></button>`;
-          } else {
-            html2 += `<button class="add_tym clicked-wishlist" productid="${item.id}"><i class="far fa-heart"></i></button>`;
-          }
-          html2 += `</li>
-                  </div>
-              </div>
-          </div>`;
-          document.querySelector('.main-content__square').innerHTML = html2;
-
-          let stringdetail = '';
-          if (e[i].detail.length > 150) {
-            stringdetail = e[i].detail.slice(0, 150) + ' ...';
-          } else {
-            stringdetail = e[i].detail;
-          }
-
-          html3 += `<div class="content_container_item_pillar ">
-            <div class="content_container_item_pillar_img">
-            <img src=${listProducts[i].src} alt="">
-                <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
-            </div>
-                <div class="content_container_item_pillar_content d-flex flex-column justify-content-between">
-                    <div>
-                    <h2><div class="h3" productid="${item.id}" >${listProducts[i].name}</div></h2>
-                    
-                    <div class="content_container_item_pillar_star">`;
-          for (let i = 0; i < Math.round(item.rating); ++i) {
-            html3 += `<i class="fa fa-star checked"></i>`;
-          }
-          for (let i = 0; i < 5 - Math.round(item.rating); ++i) {
-            html3 += `<i class="fa fa-star"></i>`;
-          }
-
-          html3 += `</div>
-                    <div class="content_container_item_pillar_price">
-                        <span>$</span><span>${listProducts[i].price}</span>
-                    </div>
-                    <div class="content_container_item_pillar_content_title">
-                        <span>${stringdetail}</span>
-                    </div>
-                </div>
-                <div class="content_container_item_pillar_content_btn">
-                    <button class="add_cart" productid="${item.id}">Add to cart</button>`;
-          if (
-            !localStorage
-              .getItem('wishlist')
-              .split(',')
-              .includes(item.id.toString())
-          ) {
-            html3 += `<button class="add_tym" productid="${item.id}"><i class="far fa-heart"></i></button>`;
-          } else {
-            html3 += `<button class="add_tym clicked-wishlist" productid="${item.id}"><i class="far fa-heart"></i></button>`;
-          }
-          html3 += `</div>
-            </div>
-          </div>`;
-        }
-      });
       var html4 = ``;
       for (var i = 1; i <= totalPages; i++) {
         if (idPage === i) {
@@ -268,7 +239,7 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
         }
       }
 
-      document.querySelector('.main-content__pillar').innerHTML = html3;
+      // document.querySelector('.main-content__pillar').innerHTML = html3;
       document.querySelector('.number-pagination').innerHTML = html4;
     });
   setTimeout(() => {
@@ -324,7 +295,6 @@ function priceSearch() {
 // Nut chuyen huong den product.html
 function viewButton() {
   return new Promise((rs) => {
-    header();
     setTimeout(() => {
       // click best sale to product
       let a = document.querySelectorAll('.go-to-product');
