@@ -220,22 +220,15 @@
   font-size: 13px;
 }
 
-.content_container_title_right {
-  height: 100%;
-  display: flex;
-  justify-content: center;
-  align-items: center;
-}
-
-.content_container_title_right p {
-  margin-bottom: 0 !important;
+.number-pagination p {
+  margin-bottom: 0;
   padding: 0 10px;
   font-size: 15px;
   color: #191919;
   cursor: pointer;
 }
 
-.content_container_main {
+.main-content__square {
   transition: 0.3s ease;
   animation: FtPrAni 0.3s linear;
   justify-content: left;
@@ -373,7 +366,7 @@
 }
 
 /*---------------------------------------- Làm phần chuyển sang khung nhìn cột ---------------------------------*/
-.content_container_main_pillar {
+.main-content__pillar {
   display: none;
   flex-direction: column;
   animation: FtPrAni 0.3s linear;
@@ -473,8 +466,8 @@
 
 .paging {
   margin: 0 auto;
-  display: grid;
-  grid-template-columns: auto auto auto;
+  display: flex;
+  margin-bottom: 30px;
 }
 
 .previousbtn,
@@ -483,5 +476,4 @@
   border: none;
   padding: 0 20px;
   outline: none;
-  /* margin: 0 10px; */
 }

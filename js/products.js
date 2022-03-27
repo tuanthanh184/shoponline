@@ -10,10 +10,8 @@ const pillarBtn = document.querySelector('.pillar');
 
 // Show Pillar hide Square
 pillarBtn.addEventListener('click', () => {
-  document.querySelector('.content_container_main').classList.add('hide');
-  document
-    .querySelector('.content_container_main_pillar')
-    .classList.add('show');
+  document.querySelector('.main-content__square').classList.add('hide');
+  document.querySelector('.main-content__pillar').classList.add('show');
   if (squareBtn.classList.contains('active')) {
     squareBtn.classList.remove('active');
     pillarBtn.classList.add('active');
@@ -22,45 +20,39 @@ pillarBtn.addEventListener('click', () => {
 
 // Show Square hide Pillar
 squareBtn.addEventListener('click', () => {
-  document.querySelector('.content_container_main').classList.remove('hide');
-  document
-    .querySelector('.content_container_main_pillar')
-    .classList.remove('show');
+  document.querySelector('.main-content__square').classList.remove('hide');
+  document.querySelector('.main-content__pillar').classList.remove('show');
   if (pillarBtn.classList.contains('active')) {
     squareBtn.classList.add('active');
     pillarBtn.classList.remove('active');
   }
 });
 
-// var arr = ['apple', 'mango', 'apple', 'orange', 'mango', 'mango'];
-
-// function removeDuplicates(arr) {
-//   return arr.filter((item, index) => {
-//     console.log(arr.indexOf(item), index);
-//     return arr.indexOf(item) === index;
-//   });
-// }
-
-// console.log(removeDuplicates(arr));
 // Get and render Brands
-function RenderBrand() {
+function renderBrand() {
   axios
     .get('http://localhost/BE/DataList/ProductList.php')
     .then((e) => e.data)
     .then((e) => {
-      // console.log(e);
-      let rawBrandList = e.map((item) => item.brand); // Get an array of brands
-      // Remove duplicates brands
-      let brandList = rawBrandList.filter(
-        (item, index) => rawBrandList.indexOf(item) === index
-      );
-      console.log(brandList);
+      // Get an object of brand and its quantity
+      let brandList = e.reduce((result, item) => {
+        !result[item.brand]
+          ? (result[item.brand] = 1)
+          : (result[item.brand] += 1);
+        return result;
+      }, {});
+      let htmlBrandList = '';
+      for (const brand in brandList) {
+        htmlBrandList += `<li>
+            <span class="brand-name">${brand}</span>
+            <span>(${brandList[brand]})</span>
+          </li>`;
+      }
+      const brandListRender = document.querySelector('.SideBar_content');
+      brandListRender.innerHTML += htmlBrandList;
 
-      // var html1 = '';
-      // e.forEach((item) => {
-      //   html1 += `<li brandid="${item.id}" class="${item.name}"><span>${item.name}</span><span>(${item.quantity})</span></li>`;
-      // });
-      // document.querySelector('.SideBar_Color').outerHTML = html1;
+      // Render products by Brand
+
       // setTimeout(() => {
       //   let dom = document.querySelectorAll('li[brandid]');
       //   dom.forEach((item) => {
@@ -69,8 +61,25 @@ function RenderBrand() {
       //     };
       //   });
       // }, 1000);
+    })
+    .then(() => {
+      axios
+        .get('http://localhost/BE/DataList/ProductList.php')
+        .then((e) => e.data)
+        .then((e) => {
+          const listDOM = document.querySelectorAll('.SideBar_content li');
+          listDOM.forEach((liElement) => {
+            liElement.addEventListener('click', () => {
+              let BrandValDOM =
+                liElement.querySelector('.brand-name').innerText;
+              let fil = e.filter((item) => item.brand === BrandValDOM);
+              console.log(fil);
+            });
+          });
+        });
     });
 }
+renderBrand();
 
 // Render Prodcut by Brand
 function renderProductsByBrands(brandid) {
@@ -81,9 +90,9 @@ function renderProductsByBrands(brandid) {
   axios
     .post('http://localhost/be/DataList/ProductFilters.php', data)
     .then((e) => {
-      document.querySelector('.content_container_main').innerHTML = '';
-      document.querySelector('.content_container_main_pillar').innerHTML = '';
-      document.querySelector('.content_container_title_right').innerHTML = '';
+      document.querySelector('.main-content__square').innerHTML = '';
+      document.querySelector('.main-content__pillar').innerHTML = '';
+      document.querySelector('.number-pagination').innerHTML = '';
       renderContent(e.data);
     });
 }
@@ -102,26 +111,26 @@ function renderBestSeller(limitItem) {
         (html, item) =>
           html +
           `<li class="row">
-              <div class="col-4">
-                  <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}" alt=""></a>
-              </div>
-              <div class="col-8">
-                  <p><a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a></p>
-                  <p>$<span>${item.price}</span></p>
-              </div>
-            </li>`,
+          <div class="col-4">
+          <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}"></a>
+          </div>
+          <div class="col-8">
+          <p><a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a></p>
+          <p>$${item.price}</p>
+          </div>
+          </li>`,
         ''
       );
       const bestSellerContent = document.querySelector('.bestseller-js');
       bestSellerContent.innerHTML = htmlBestSeller;
     });
 }
+renderBestSeller(5);
 
 localStorage.setItem('currentPage', 1);
 let idPage = 1;
 let start = 0;
 
-var productList = [];
 var productListToFliter = [];
 // Làm 2 nút chuyển trang
 var check = 0;
@@ -139,6 +148,7 @@ previousBtn.addEventListener('click', () => {
   clickBtnChoosePage(currentPage);
 });
 
+var productList = [];
 // Hàm đổ dữ liệu ra khi load trang
 function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
   axios
@@ -148,7 +158,6 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
       productList = e;
       listProducts == 'empty' ? (listProducts = e) : '';
       listProducts == 'empty' ? '' : (productListToFliter = listProducts);
-      var html2 = '';
       var html3 = '';
       var select = document.getElementById('show_items');
       var perPage = select.options[select.selectedIndex].value;
@@ -165,6 +174,7 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
       } else {
         previousBtn.disabled = false;
       }
+      var html2 = '';
       // console.log(listProducts);
       productsPerPage == 'empty' ? '' : (listProducts = productsPerPage);
       listProducts.forEach((item, i) => {
@@ -172,18 +182,18 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
           html2 += `<div class="col-6 col-lg-4 content_container_item">
               <div class="content_container_item_border">
                   <div class="content_container_item_show">
-                      <img src=${listProducts[i].src} alt="">
+                      <img src=${listProducts[i].src}>
                       <div class="content_container_item_show_infor">
                           <p class="title">${listProducts[i].name}</p>
                           <p>$<span>${listProducts[i].price}</span></p>
                       </div>
                   </div>
                   <div class="content_container_item_hover">
-                      <li>
-                          <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
+                  <li>
+                  <button class="add_view" productid="${item.id}"><i class="far fa-eye"></i></button>
                       </li>
                       <li>
-                          <button class="add_cart" productid="${item.id}">Add to cart</button>`;
+                      <button class="add_cart" productid="${item.id}">Add to cart</button>`;
           if (
             !localStorage
               .getItem('wishlist')
@@ -198,6 +208,7 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
                   </div>
               </div>
           </div>`;
+          document.querySelector('.main-content__square').innerHTML = html2;
 
           let stringdetail = '';
           if (e[i].detail.length > 150) {
@@ -257,11 +268,8 @@ function renderContent(listProducts = 'empty', productsPerPage = 'empty') {
         }
       }
 
-      document.querySelector('.content_container_main').innerHTML = html2;
-      document.querySelector('.content_container_main_pillar').innerHTML =
-        html3;
-      document.querySelector('.content_container_title_right').innerHTML =
-        html4;
+      document.querySelector('.main-content__pillar').innerHTML = html3;
+      document.querySelector('.number-pagination').innerHTML = html4;
     });
   setTimeout(() => {
     let dom = document.querySelectorAll('.page-number');
@@ -305,9 +313,9 @@ function priceSearch() {
   axios
     .post('http://localhost/be/DataList/ProductFilters.php', data)
     .then((e) => {
-      document.querySelector('.content_container_main').innerHTML = '';
-      document.querySelector('.content_container_main_pillar').innerHTML = '';
-      document.querySelector('.content_container_title_right').innerHTML = '';
+      document.querySelector('.main-content__square').innerHTML = '';
+      document.querySelector('.main-content__pillar').innerHTML = '';
+      document.querySelector('.number-pagination').innerHTML = '';
       // document.querySelector(".SideBar_bestseller_content").innerHTML = '';
       renderContent(e.data);
     });
@@ -461,9 +469,6 @@ axios
     localStorage.setItem('wishlist', e);
   });
 
-renderBestSeller(5);
-RenderBrand();
-
 if (localStorage.getItem('brandid')) {
   renderProductsByBrands(localStorage.getItem('brandid'));
   setTimeout(() => {
@@ -489,9 +494,9 @@ function renderProductsByCategories(cateid) {
   axios
     .post('http://localhost/be/DataList/ProductFilters.php', data)
     .then((e) => {
-      document.querySelector('.content_container_main').innerHTML = '';
-      document.querySelector('.content_container_main_pillar').innerHTML = '';
-      document.querySelector('.content_container_title_right').innerHTML = '';
+      document.querySelector('.main-content__square').innerHTML = '';
+      document.querySelector('.main-content__pillar').innerHTML = '';
+      document.querySelector('.number-pagination').innerHTML = '';
       // document.querySelector(".SideBar_bestseller_content").innerHTML = '';
       renderContent(e.data);
     });
