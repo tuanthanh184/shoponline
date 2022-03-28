@@ -1,18 +1,26 @@
-export function multiPageItem(limitSize) {
-  const cartItems = Array.from(document.querySelectorAll('.cart-item'));
+export function multiPageItems(itemElement, limitSize) {
+  const itemList = Array.from(document.querySelectorAll(itemElement));
   const nextPage = document.querySelector('.next');
   const prevPage = document.querySelector('.prev');
   let slice = [0, limitSize];
-
-  cartItems
-    .slice(0, limitSize)
-    .forEach((cartItem) => (cartItem.style.display = 'flex'));
-  cartItems
-    .slice(limitSize, cartItems.length)
-    .forEach((cartItem) => (cartItem.style.display = 'none'));
+  let paginationNumbers = Math.ceil(itemList.length / limitSize);
+  document.querySelector('.pagination').innerHTML = '';
+  console.log(paginationNumbers);
+  if (paginationNumbers === 1) {
+    document.querySelector('.pagination-mode').style.display = 'none';
+  } else {
+    document.querySelector('.pagination-mode').style.display = 'flex';
+    for (let i = 1; i <= paginationNumbers; i++) {
+      document.querySelector('.pagination').innerHTML += `<span>${i}</span>`;
+    }
+  }
+  itemList.slice(0, limitSize).forEach((item) => (item.style.display = 'flex'));
+  itemList
+    .slice(limitSize, itemList.length)
+    .forEach((item) => (item.style.display = 'none'));
 
   nextPage.addEventListener('click', () => {
-    if (slice[1] < cartItems.length) {
+    if (slice[1] < itemList.length) {
       slice = slice.map((num) => num + limitSize);
     }
     showSlice(slice);
@@ -34,9 +42,9 @@ export function multiPageItem(limitSize) {
   });
 
   function showSlice(slice) {
-    cartItems.forEach((cartItem) => (cartItem.style.display = 'none'));
-    cartItems
+    itemList.forEach((item) => (item.style.display = 'none'));
+    itemList
       .slice(slice[0], slice[1])
-      .forEach((cartItem) => (cartItem.style.display = 'flex'));
+      .forEach((item) => (item.style.display = 'flex'));
   }
 }

@@ -41,18 +41,14 @@
               <i class="far fa-gem"></i>
               <span>PRICE</span>
             </div>
-            <div style="width: 85%; margin: 0 auto">
+            <div class="sidebar-filter__content">
+              <small class="d-block mt-3 text-danger"></small>
               <div class="d-flex mt-3 justify-content-between">
-                <input type="number" id="low_price" placeholder=" Min" />
-                <input type="number" id="expensive" placeholder=" Max" />
+                <input type="number" id="min-price" placeholder=" Min" />
+                <input type="number" id="max-price" placeholder=" Max" />
               </div>
               <div class="my-3">
-                <button
-                  class="btn btn-dark searchPrice"
-                  onclick="priceSearch();"
-                >
-                  FILTER
-                </button>
+                <button class="btn btn-dark search-price">FILTER</button>
               </div>
             </div>
           </ul>
@@ -76,61 +72,47 @@
           <div class="content_container_slider">
             <img src="./image/products/slider.jpg" alt="" />
           </div>
-          <div class="content_container_search">
-            <input
-              type="text"
-              id="myInput"
-              onkeyup="search()"
-              placeholder="Search with Merry ....."
-            />
-          </div>
           <ul class="content_container_title">
             <li>
               <span>PRODUCTS</span>
             </li>
             <li class="row">
               <div class="col-sm-3">
-                <button class="square active">
+                <button class="square-btn active">
                   <i class="fas fa-th-large"></i>
                 </button>
-                <button class="pillar"><i class="fas fa-bars"></i></button>
+                <button class="pillar-btn"><i class="fas fa-bars"></i></button>
               </div>
               <div class="col-sm-6 content_container_title_mid">
-                <div class="content_container_title_mid_left">
-                  <span>
-                    <i class="fas fa-arrow-down filterTop"></i>
-                  </span>
-                  <span>
-                    <i class="fas fa-arrow-up filterBottom"></i>
-                  </span>
-                </div>
                 <div class="content_container_title_mid_left_right">
-                  <span> Show </span>
+                  <span> Sort by </span>
                   <select
                     id="show_items"
                     class="dropdown"
                     onchange="asyncCall();"
                   >
-                    <option value="12">12</option>
-                    <option value="15">15</option>
-                    <option value="18">18</option>
-                    <option value="21">21</option>
+                    <option value="ascendant-name">Name (A to Z)</option>
+                    <option value="descendant-name">Name (Z to A)</option>
+                    <option value="ascendant-price">Price ascendant</option>
+                    <option value="descendant-price">Price descendant</option>
                   </select>
                 </div>
               </div>
             </li>
           </ul>
 
-          <div class="main-content__square row"></div>
+          <div class="main-content__square"></div>
 
           <div class="main-content__pillar"></div>
 
-          <div class="paging">
-            <button class="previousbtn">
+          <div class="pagination-mode">
+            <button class="prev" disabled>
               <i class="fas fa-caret-left"></i>
             </button>
-            <div class="number-pagination d-flex"></div>
-            <button class="nextbtn"><i class="fas fa-caret-right"></i></button>
+            <div class="pagination"></div>
+            <button class="next">
+              <i class="fas fa-caret-right"></i>
+            </button>
           </div>
         </div>
       </div>
