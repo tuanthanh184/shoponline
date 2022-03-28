@@ -85,16 +85,12 @@
               </div>
               <div class="col-sm-6 content_container_title_mid">
                 <div class="content_container_title_mid_left_right">
-                  <span> Sort by </span>
-                  <select
-                    id="show_items"
-                    class="dropdown"
-                    onchange="asyncCall();"
-                  >
-                    <option value="ascendant-name">Name (A to Z)</option>
-                    <option value="descendant-name">Name (Z to A)</option>
-                    <option value="ascendant-price">Price ascendant</option>
-                    <option value="descendant-price">Price descendant</option>
+                  <select class="sort-products">
+                    <option value="">Sort by</option>
+                    <option value="ascending-name">Name (A to Z)</option>
+                    <option value="descending-name">Name (Z to A)</option>
+                    <option value="ascending-price">Price ascending</option>
+                    <option value="descending-price">Price descending</option>
                   </select>
                 </div>
               </div>

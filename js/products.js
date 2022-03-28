@@ -52,7 +52,7 @@ function renderBrand() {
         htmlBrandList += `<li>
             <span class="brand-name">${brand}</span>
             <span>(${brandList[brand]})</span>
-          </li>`;
+            </li>`;
       }
       const brandListRender = document.querySelector('.SideBar_content');
       brandListRender.innerHTML += htmlBrandList;
@@ -82,64 +82,55 @@ function renderProducts(options) {
     (html, item) =>
       html +
       `<div class="square">
-        <div class="square-img">
-          <img src="${item.src}" />
-          <div class="square-img__blur">
-            <div class="view">
+          <div class="square-img">
+            <img src="${item.src}" />
+            <div class="square-img__blur">
+              <div class="view">
               <i class="far fa-eye"></i>
-            </div>
-          </div>
-        </div>
-        <div class="square-detail">
-          <div class="square-detail__top">
-            <a
-              href="#"
-              class="product-link product-name-link"
-              productid="${item.id}"
-              >${item.name}</a
-            >
-          </div>
-          <div class="square-detail__bottom">
-            <div class="price">$ ${item.price}</div>
-            <div class="d-flex">
-              <div class="addcart">
-                <button>Add to cart</button>
-              </div>
-              <div class="wishlist" productid="${item.id}">
-                <i class="far fa-heart" productid="${item.id}"></i>
-              </div>
-              <div class="wishlist clicked-wishlist" productid="${item.id}">
-                <i
-                  class="far fa-heart"
-                  style="color: white"
-                  productid="${item.id}"
-                ></i>
-              </div>
-              <div class="compare" productid="${item.id}">
-                <i class="fas fa-retweet"></i>
               </div>
             </div>
           </div>
-        </div>
-      </div>`,
+          <div class="square-detail">
+            <div class="square-detail__top">
+              <a href="#" class="product-link product-name-link" productid="${item.id}">${item.name}</a>
+            </div>
+            <div class="square-detail__bottom">
+              <div class="price">$ ${item.price}</div>
+              <div class="d-flex">
+                <div class="addcart">
+                  <button>Add to cart</button>
+                </div>
+                <div class="wishlist" productid="${item.id}">
+                  <i class="far fa-heart" productid="${item.id}"></i>
+                </div>
+                <div class="wishlist clicked-wishlist" productid="${item.id}">
+                  <i class="far fa-heart" productid="${item.id}"></i>
+                </div>
+                <div class="compare" productid="${item.id}">
+                  <i class="fas fa-retweet"></i>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>`,
     ''
   );
   document.querySelector(options.square).innerHTML = htmlSquare;
   // Pillar display
   let htmlPillar = options.renderList.reduce((html, item) => {
     html += `<div class="pillar">
-        <div class="pillar-img">
-          <img src=${item.src}>
-          <div class="pillar-img__blur">
-            <div class="view productid="${item.id}">
-              <i class="far fa-eye"></i>
-            </div>
+      <div class="pillar-img">
+        <img src=${item.src}>
+        <div class="pillar-img__blur">
+          <div class="view productid="${item.id}">
+            <i class="far fa-eye"></i>
           </div>
         </div>
-        <div class="pillar_content d-flex flex-column justify-content-between">
-          <div class="pillar-content__top">
-            <a href="#" productid="${item.id}" >${item.name}</a>
-            <div class="pillar_star">`;
+      </div>
+      <div class="pillar_content d-flex flex-column justify-content-between">
+        <div class="pillar-content__top">
+          <a href="#" productid="${item.id}" >${item.name}</a>
+          <div class="pillar_star">`;
     for (let i = 0; i < Math.round(item.rating); ++i) {
       html += `<i class="fa fa-star checked"></i>`;
     }
@@ -147,26 +138,26 @@ function renderProducts(options) {
       html += `<i class="fa fa-star"></i>`;
     }
     html += `</div>
-            <div class="pillar_price">
-              <span>$${item.price}</span>
-            </div>
-            <div class="item_pillar_content_detail">
-                <p>${item.detail}</p>
-            </div>
+          <div class="pillar_price">
+            <span>$${item.price}</span>
           </div>
-          <div class="d-flex">
-            <div class="addcart">
-              <button productid="${item.id}">Add to cart</button>
-            </div>
-            <div class="wishlist productid="${item.id}">
-              <i class="far fa-heart"></i>
-            </div>
-            <div class="compare">
-              <i class="fas fa-retweet"></i>
-            </div>
+          <div class="item_pillar_content_detail">
+              <p>${item.detail}</p>
           </div>
         </div>
-      </div>`;
+        <div class="d-flex">
+          <div class="addcart">
+            <button productid="${item.id}">Add to cart</button>
+          </div>
+          <div class="wishlist productid="${item.id}">
+            <i class="far fa-heart"></i>
+          </div>
+          <div class="compare">
+            <i class="fas fa-retweet"></i>
+          </div>
+        </div>
+      </div>
+    </div>`;
     return html;
   }, '');
   document.querySelector(options.pillar).innerHTML = htmlPillar;
@@ -185,6 +176,7 @@ axios
     multiPageItems('.square', limitSize);
     // multiPageItems('.main-content__pillar', 5);
     searchPrice(e);
+    sortProducts(e);
   });
 
 // Get and render 5 bestseller Items
@@ -217,25 +209,6 @@ function renderBestSeller(limitItem) {
 }
 renderBestSeller(5);
 
-var productListToFliter = [];
-var productList = [];
-
-// Làm sự kiện click vào chọn trang
-function clickBtnChoosePage(e) {
-  let renderList = [...productListToFliter];
-
-  let data = [];
-  let productsPerPage = document.getElementById('show_items').value;
-  for (let i = 0; i < e; i++) {
-    data = renderList.splice(0, productsPerPage);
-  }
-  renderContent(productListToFliter, data);
-  window.scrollTo({
-    top: 400,
-    behavior: 'smooth',
-  });
-}
-
 // Filter Products by Price
 function searchPrice(productList) {
   const searchBtn = document.querySelector('.search-price');
@@ -257,6 +230,73 @@ function searchPrice(productList) {
         pillar: '.main-content__pillar',
       });
     }
+  });
+}
+
+// Sort Products
+function sortProducts(productList) {
+  const sortSelect = document.querySelector('.sort-products');
+  sortSelect.addEventListener('change', () => {
+    let option = sortSelect.querySelector('option:checked').value;
+    switch (option) {
+      case 'ascending-name':
+        productList.sort((a, b) => {
+          if (a.name < b.name) return -1;
+        });
+        renderProducts({
+          renderList: productList,
+          square: '.main-content__square',
+          pillar: '.main-content__pillar',
+        });
+        break;
+      case 'descending-name':
+        productList.sort((a, b) => {
+          if (a.name > b.name) return -1;
+        });
+        renderProducts({
+          renderList: productList,
+          square: '.main-content__square',
+          pillar: '.main-content__pillar',
+        });
+        break;
+      case 'ascending-price':
+        productList.sort((a, b) => parseInt(a.price) - parseInt(b.price));
+        renderProducts({
+          renderList: productList,
+          square: '.main-content__square',
+          pillar: '.main-content__pillar',
+        });
+        break;
+      case 'descending-price':
+        productList.sort((a, b) => parseInt(b.price) - parseInt(a.price));
+        renderProducts({
+          renderList: productList,
+          square: '.main-content__square',
+          pillar: '.main-content__pillar',
+        });
+        break;
+      default:
+        break;
+    }
+  });
+}
+
+var productListToFliter = [];
+var productList = [];
+
+// Làm sự kiện click vào chọn trang
+function clickBtnChoosePage(e) {
+  let renderList = [...productListToFliter];
+
+  let data = [];
+  let productsPerPage = document.getElementById('show_items').value;
+  for (let i = 0; i < e; i++) {
+    data = renderList.splice(0, productsPerPage);
+  }
+  renderContent(productListToFliter, data);
+  window.scrollTo({
+    top: 400,
+    behavior: 'smooth',
   });
 }
 
