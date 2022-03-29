@@ -5,7 +5,6 @@ export function multiPageItems(itemElement, limitSize) {
   let slice = [0, limitSize];
   let paginationNumbers = Math.ceil(itemList.length / limitSize);
   document.querySelector('.pagination').innerHTML = '';
-  console.log(paginationNumbers);
   if (paginationNumbers === 1) {
     document.querySelector('.pagination-mode').style.display = 'none';
   } else {

@@ -6,6 +6,8 @@ import { multiPageItems } from './module/multipage.js';
 // Square display and Pillar display
 const squareBtn = document.querySelector('.square-btn');
 const pillarBtn = document.querySelector('.pillar-btn');
+const limitSizeSquare = 15;
+const limitSizePillar = 5;
 
 // Show Pillar hide Square
 pillarBtn.addEventListener('click', () => {
@@ -14,6 +16,7 @@ pillarBtn.addEventListener('click', () => {
   if (squareBtn.classList.contains('active')) {
     squareBtn.classList.remove('active');
     pillarBtn.classList.add('active');
+    multiPageItems('.pillar', limitSizePillar);
   }
 });
 
@@ -22,8 +25,9 @@ squareBtn.addEventListener('click', () => {
   document.querySelector('.main-content__square').classList.remove('hide');
   document.querySelector('.main-content__pillar').classList.remove('show');
   if (pillarBtn.classList.contains('active')) {
-    squareBtn.classList.add('active');
     pillarBtn.classList.remove('active');
+    squareBtn.classList.add('active');
+    multiPageItems('.square', limitSizeSquare);
   }
 });
 
@@ -32,10 +36,8 @@ squareBtn.addEventListener('click', () => {
   await header();
 })();
 
-const limitSize = 15;
-
 // Get and render Brands
-function renderBrand() {
+(function renderBrands() {
   axios
     .get('http://localhost/BE/DataList/ProductList.php')
     .then((e) => e.data)
@@ -54,26 +56,26 @@ function renderBrand() {
             <span>(${brandList[brand]})</span>
             </li>`;
       }
-      const brandListRender = document.querySelector('.SideBar_content');
+      const brandListRender = document.querySelector('.brandlist');
       brandListRender.innerHTML += htmlBrandList;
       // Render Products by Brand
-      const listDOM = document.querySelectorAll('.SideBar_content li');
+      const listDOM = document.querySelectorAll('.brandlist li');
       listDOM.forEach((liElement) => {
         liElement.addEventListener('click', () => {
           let BrandValDOM = liElement.querySelector('.brand-name').innerText;
+          document.querySelector('.main-title').innerText = BrandValDOM;
           let filterBrands = e.filter((item) => item.brand === BrandValDOM);
           renderProducts({
             renderList: filterBrands,
             square: '.main-content__square',
             pillar: '.main-content__pillar',
           });
-          multiPageItems('.square', limitSize);
           searchPrice(filterBrands);
+          sortProducts(filterBrands);
         });
       });
     });
-}
-renderBrand();
+})();
 
 // Render Products
 function renderProducts(options) {
@@ -82,55 +84,55 @@ function renderProducts(options) {
     (html, item) =>
       html +
       `<div class="square">
-          <div class="square-img">
-            <img src="${item.src}" />
-            <div class="square-img__blur">
-              <div class="view">
-              <i class="far fa-eye"></i>
-              </div>
-            </div>
-          </div>
-          <div class="square-detail">
-            <div class="square-detail__top">
-              <a href="#" class="product-link product-name-link" productid="${item.id}">${item.name}</a>
-            </div>
-            <div class="square-detail__bottom">
-              <div class="price">$ ${item.price}</div>
-              <div class="d-flex">
-                <div class="addcart">
-                  <button>Add to cart</button>
-                </div>
-                <div class="wishlist" productid="${item.id}">
-                  <i class="far fa-heart" productid="${item.id}"></i>
-                </div>
-                <div class="wishlist clicked-wishlist" productid="${item.id}">
-                  <i class="far fa-heart" productid="${item.id}"></i>
-                </div>
-                <div class="compare" productid="${item.id}">
-                  <i class="fas fa-retweet"></i>
+            <div class="square-img">
+              <img src="${item.src}" />
+              <div class="square-img__blur">
+                <div class="view">
+                <i class="far fa-eye"></i>
                 </div>
               </div>
             </div>
-          </div>
-        </div>`,
+            <div class="square-detail">
+              <div class="square-detail__top">
+                <a href="#" class="product-link product-name-link" productid="${item.id}">${item.name}</a>
+              </div>
+              <div class="square-detail__bottom">
+                <div class="price">$ ${item.price}</div>
+                <div class="d-flex">
+                  <div class="addcart">
+                    <button>Add to cart</button>
+                  </div>
+                  <div class="wishlist" productid="${item.id}">
+                    <i class="far fa-heart" productid="${item.id}"></i>
+                  </div>
+                  <div class="wishlist clicked-wishlist" productid="${item.id}">
+                    <i class="far fa-heart" productid="${item.id}"></i>
+                  </div>
+                  <div class="compare" productid="${item.id}">
+                    <i class="fas fa-retweet"></i>
+                  </div>
+                </div>
+              </div>
+            </div>
+          </div>`,
     ''
   );
   document.querySelector(options.square).innerHTML = htmlSquare;
   // Pillar display
   let htmlPillar = options.renderList.reduce((html, item) => {
     html += `<div class="pillar">
-      <div class="pillar-img">
-        <img src=${item.src}>
-        <div class="pillar-img__blur">
-          <div class="view productid="${item.id}">
-            <i class="far fa-eye"></i>
+        <div class="pillar-img">
+          <img src=${item.src}>
+          <div class="pillar-img__blur">
+            <div class="view productid="${item.id}">
+              <i class="far fa-eye"></i>
+            </div>
           </div>
         </div>
-      </div>
-      <div class="pillar_content d-flex flex-column justify-content-between">
-        <div class="pillar-content__top">
-          <a href="#" productid="${item.id}" >${item.name}</a>
-          <div class="pillar_star">`;
+        <div class="pillar_content d-flex flex-column justify-content-between">
+          <div class="pillar-content__top">
+            <a href="#" productid="${item.id}" >${item.name}</a>
+            <div class="pillar_star">`;
     for (let i = 0; i < Math.round(item.rating); ++i) {
       html += `<i class="fa fa-star checked"></i>`;
     }
@@ -138,29 +140,36 @@ function renderProducts(options) {
       html += `<i class="fa fa-star"></i>`;
     }
     html += `</div>
-          <div class="pillar_price">
-            <span>$${item.price}</span>
+            <div class="pillar_price">
+              <span>$${item.price}</span>
+            </div>
+            <div class="item_pillar_content_detail">
+                <p>${item.detail}</p>
+            </div>
           </div>
-          <div class="item_pillar_content_detail">
-              <p>${item.detail}</p>
+          <div class="d-flex">
+            <div class="addcart">
+              <button productid="${item.id}">Add to cart</button>
+            </div>
+            <div class="wishlist productid="${item.id}">
+              <i class="far fa-heart"></i>
+            </div>
+            <div class="compare">
+              <i class="fas fa-retweet"></i>
+            </div>
           </div>
         </div>
-        <div class="d-flex">
-          <div class="addcart">
-            <button productid="${item.id}">Add to cart</button>
-          </div>
-          <div class="wishlist productid="${item.id}">
-            <i class="far fa-heart"></i>
-          </div>
-          <div class="compare">
-            <i class="fas fa-retweet"></i>
-          </div>
-        </div>
-      </div>
-    </div>`;
+      </div>`;
     return html;
   }, '');
   document.querySelector(options.pillar).innerHTML = htmlPillar;
+
+  if (squareBtn.classList.contains('active')) {
+    multiPageItems('.square', limitSizeSquare);
+  }
+  if (pillarBtn.classList.contains('active')) {
+    multiPageItems('.pillar', limitSizePillar);
+  }
 }
 
 axios
@@ -172,15 +181,13 @@ axios
       square: '.main-content__square',
       pillar: '.main-content__pillar',
     });
-    // console.log(document.querySelector('.main-content__pillar'));
-    multiPageItems('.square', limitSize);
-    // multiPageItems('.main-content__pillar', 5);
+    searchProductsByInput(e);
     searchPrice(e);
     sortProducts(e);
   });
 
 // Get and render 5 bestseller Items
-function renderBestSeller(limitItem) {
+(function renderBestSeller(limitItem) {
   axios
     .get('http://localhost/BE/DataList/ProductList.php')
     .then((e) => e.data)
@@ -193,36 +200,35 @@ function renderBestSeller(limitItem) {
         (html, item) =>
           html +
           `<li class="row">
-          <div class="col-4">
-          <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}"></a>
-          </div>
-          <div class="col-8">
-          <p><a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a></p>
-          <p>$${item.price}</p>
-          </div>
+            <div class="col-4">
+              <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}"></a>
+            </div>
+            <div class="col-8">
+              <p>
+                <a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a>
+              </p>
+              <p>$${item.price}</p>
+            </div>
           </li>`,
         ''
       );
-      const bestSellerContent = document.querySelector('.bestseller-js');
-      bestSellerContent.innerHTML = htmlBestSeller;
+      document.querySelector('.bestseller-list').innerHTML = htmlBestSeller;
     });
-}
-renderBestSeller(5);
+})(5);
 
 // Filter Products by Price
 function searchPrice(productList) {
   const searchBtn = document.querySelector('.search-price');
   searchBtn.addEventListener('click', () => {
-    const minPrice = document.querySelector('#min-price');
-    const maxPrice = document.querySelector('#max-price');
-    if (!minPrice.value || !maxPrice.value || minPrice.value > maxPrice.value) {
+    const minPrice = parseInt(document.querySelector('#min-price').value);
+    const maxPrice = parseInt(document.querySelector('#max-price').value);
+    if (!minPrice || !maxPrice || minPrice > maxPrice) {
       document.querySelector('small').innerText = 'Invalid';
     } else {
       document.querySelector('small').innerText = '';
       let filterPrice = productList.filter(
         (item) =>
-          parseInt(item.price) <= maxPrice.value &&
-          parseInt(item.price) >= minPrice.value
+          parseInt(item.price) <= maxPrice && parseInt(item.price) >= minPrice
       );
       renderProducts({
         renderList: filterPrice,
@@ -281,6 +287,21 @@ function sortProducts(productList) {
   });
 }
 
+function searchProductsByInput(productList) {
+  const searchInput = document.querySelector('.search-box-input');
+  searchInput.addEventListener('input', (event) => {
+    let resultList = productList.filter((item) =>
+      item.name.toLowerCase().includes(event.target.value.toLowerCase())
+    );
+    renderProducts({
+      renderList: resultList,
+      square: '.main-content__square',
+      pillar: '.main-content__pillar',
+    });
+    searchPrice(resultList);
+    sortProducts(resultList);
+  });
+}
 var productListToFliter = [];
 var productList = [];
 
@@ -311,39 +332,6 @@ function viewButton() {
           localStorage.setItem('productid', item.getAttribute('productid'));
         };
       });
-      // click render by top
-      // document.querySelector('.filterTop').onclick = () => {
-      //   let array = [];
-      //   let sortedArry = [];
-      //   productListToFliter.forEach((item) => {
-      //     array.push(item.name);
-      //   });
-      //   array.sort().forEach((name) => {
-      //     productListToFliter.filter((item) => {
-      //       if (item.name == name) {
-      //         sortedArry = [...sortedArry, ...[item]];
-      //       }
-      //     });
-      //   });
-      //   renderContent(sortedArry);
-      // };
-
-      // click render by botton
-      // document.querySelector('.filterBottom').onclick = () => {
-      //   let array = [];
-      //   let reSortedArry = [];
-      //   productListToFliter.forEach((item) => {
-      //     array.push(item.name);
-      //   });
-      //   array.reverse().forEach((name) => {
-      //     productListToFliter.filter((item) => {
-      //       if (item.name == name) {
-      //         reSortedArry = [...reSortedArry, ...[item]];
-      //       }
-      //     });
-      //   });
-      //   renderContent(reSortedArry);
-      // };
 
       // click view button to product
       let viewButton = document.querySelectorAll('.add_view');
@@ -424,20 +412,6 @@ function viewButton() {
   });
 }
 
-// Xu li bat dong bo
-function render() {
-  return new Promise((rs) => {
-    setTimeout(() => {
-      // renderContent();
-      rs('ok chay xong');
-    }, 1000);
-  });
-}
-
-async function asyncCall() {
-  await render();
-  await viewButton();
-}
 let data = new FormData();
 data.append('userid', localStorage.getItem('userid'));
 axios
@@ -459,8 +433,8 @@ if (localStorage.getItem('brandid')) {
     viewButton();
     // localStorage.removeItem('cateid');
   }, 1000);
-} else {
-  asyncCall();
+  // } else {
+  //   asyncCall();
 }
 
 // Render product by Categories

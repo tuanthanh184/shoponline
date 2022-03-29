@@ -1,43 +1,26 @@
 function header() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      renderBrands();
+      // Render Brands Logo
+      (function renderBrandsLogo() {
+        axios
+          .get('http://localhost/be/DataList/Brands.php')
+          .then((e) => e.data)
+          .then((e) => {
+            let html = '';
+            e.forEach((item) => {
+              html += `<div><img src="${item.img}"></div>`;
+            });
+            document.querySelector('.brand').innerHTML = html;
+          });
+      })();
+
       countItemCart();
 
-      // Làm nút search
-      var searchBtn = document.querySelector('.search_box_btn');
-      searchBtn.addEventListener('click', function () {
-        this.parentElement.classList.toggle('open');
-        this.previousElementSibling.focus();
-      });
       resolve('Load content success!');
       reject('Load content failed!');
     }, 1000);
   });
-}
-
-function renderBrands() {
-  axios
-    .get('http://localhost/be/DataList/Brands.php')
-    .then((e) => e.data)
-    .then((e) => {
-      let html = '';
-      e.forEach((item) => {
-        html += `<div brandid=${item.id}><img src="${item.img}"></div>`;
-      });
-      document.querySelector('.brand').innerHTML = html;
-    });
-  setTimeout(() => {
-    let cateSpan = document.querySelectorAll('div[brandid]');
-    cateSpan.forEach((item) => {
-      item.onclick = () => {
-        localStorage.setItem('brandid', item.getAttribute('brandid'));
-        window.location.href.includes('layout')
-          ? (window.location.href = './products.html')
-          : (window.location.href = './layout/products.html');
-      };
-    });
-  }, 500);
 }
 
 function countItemCart() {

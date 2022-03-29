@@ -29,92 +29,91 @@
 
     <header></header>
 
-    <!-- Nội dung page -->
-    <div class="container">
-      <div class="d-flex flex-column justify-content-between"></div>
-      <!-- Nội dung bên trong trang -->
-      <div class="content row">
-        <!--Phần Left SideBar Grid-->
-        <div class="SideBar col-12 col-md-4 col-lg-3">
-          <ul class="SideBar_price">
-            <div class="SideBar_title">
-              <i class="far fa-gem"></i>
-              <span>PRICE</span>
-            </div>
-            <div class="sidebar-filter__content">
-              <small class="d-block mt-3 text-danger"></small>
-              <div class="d-flex mt-3 justify-content-between">
-                <input type="number" id="min-price" placeholder=" Min" />
-                <input type="number" id="max-price" placeholder=" Max" />
+    <!-- Main Page -->
+    <main>
+      <div class="container">
+        <div class="row">
+          <!-- Leftside -->
+          <div class="sidebar col-3">
+            <div class="sidebar-price">
+              <div class="sidebar-title">
+                <i class="far fa-gem"></i>
+                <h5 class="mb-0">PRICE</h5>
               </div>
-              <div class="my-3">
-                <button class="btn btn-dark search-price">FILTER</button>
+              <div class="sidebar-filter__content">
+                <small class="d-block mt-3 text-danger"></small>
+                <div class="d-flex mt-3 justify-content-between">
+                  <input type="number" id="min-price" placeholder="Min" />
+                  <input type="number" id="max-price" placeholder="Max" />
+                </div>
+                <div class="my-3">
+                  <button class="btn btn-dark search-price">FILTER</button>
+                </div>
               </div>
             </div>
-          </ul>
-          <ul class="SideBar_content">
-            <div class="SideBar_title">
-              <i class="far fa-gem"></i>
-              <span>BRAND</span>
+            <ul class="sidebar-brand">
+              <div class="sidebar-title">
+                <i class="far fa-gem"></i>
+                <h5 class="mb-0">BRAND</h5>
+              </div>
+              <ul class="brandlist"></ul>
+            </ul>
+            <div class="sidebar-bestseller">
+              <div class="sidebar-title">
+                <i class="far fa-gem"></i>
+                <h5 class="mb-0">BEST SELLER</h5>
+              </div>
+              <ul class="bestseller-list"></ul>
             </div>
-          </ul>
-          <ul class="SideBar_bestseller">
-            <div class="SideBar_title">
-              <i class="far fa-gem"></i>
-              <span>BEST SELLER</span>
-            </div>
-            <ul class="SideBar_bestseller_content bestseller-js"></ul>
-          </ul>
-        </div>
-
-        <!-- Phần Thông tin các sản phẩm -->
-        <div class="content_container col-12 col-md-8 col-lg-9">
-          <div class="content_container_slider">
-            <img src="./image/products/slider.jpg" alt="" />
           </div>
-          <ul class="content_container_title">
-            <li>
-              <span>PRODUCTS</span>
-            </li>
-            <li class="row">
-              <div class="col-sm-3">
+
+          <!-- Phần Thông tin các sản phẩm -->
+          <div class="main-content col-9">
+            <div class="content-slider">
+              <img src="./image/products/slider.jpg" />
+            </div>
+            <div class="search-box">
+              <i class="fas fa-search"></i>
+              <input type="text" class="search-box-input" />
+            </div>
+            <div><h4 class="main-title">PRODUCTS</h4></div>
+            <div class="main-content__options">
+              <div class="display-btns">
                 <button class="square-btn active">
                   <i class="fas fa-th-large"></i>
                 </button>
-                <button class="pillar-btn"><i class="fas fa-bars"></i></button>
+                <button class="pillar-btn">
+                  <i class="fas fa-bars"></i>
+                </button>
               </div>
-              <div class="col-sm-6 content_container_title_mid">
-                <div class="content_container_title_mid_left_right">
-                  <select class="sort-products">
-                    <option value="">Sort by</option>
-                    <option value="ascending-name">Name (A to Z)</option>
-                    <option value="descending-name">Name (Z to A)</option>
-                    <option value="ascending-price">Price ascending</option>
-                    <option value="descending-price">Price descending</option>
-                  </select>
-                </div>
-              </div>
-            </li>
-          </ul>
+              <select class="sort-products">
+                <option value="">Sort by</option>
+                <option value="ascending-name">Name (A to Z)</option>
+                <option value="descending-name">Name (Z to A)</option>
+                <option value="ascending-price">Price ascending</option>
+                <option value="descending-price">Price descending</option>
+              </select>
+            </div>
 
-          <div class="main-content__square"></div>
+            <div class="main-content__square"></div>
 
-          <div class="main-content__pillar"></div>
+            <div class="main-content__pillar"></div>
 
-          <div class="pagination-mode">
-            <button class="prev" disabled>
-              <i class="fas fa-caret-left"></i>
-            </button>
-            <div class="pagination"></div>
-            <button class="next">
-              <i class="fas fa-caret-right"></i>
-            </button>
+            <div class="pagination-mode">
+              <button class="prev" disabled>
+                <i class="fas fa-caret-left"></i>
+              </button>
+              <div class="pagination"></div>
+              <button class="next">
+                <i class="fas fa-caret-right"></i>
+              </button>
+            </div>
           </div>
         </div>
       </div>
-    </div>
+    </main>
 
     <footer></footer>
   </body>
-  <script type="module" src="./js/products.js"></script>
+  <script type="module" src="./js/index.js"></script>
 </html>
