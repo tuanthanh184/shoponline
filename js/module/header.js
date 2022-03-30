@@ -1,20 +1,6 @@
 function header() {
   return new Promise((resolve, reject) => {
     setTimeout(() => {
-      // Render Brands Logo
-      (function renderBrandsLogo() {
-        axios
-          .get('http://localhost/be/DataList/Brands.php')
-          .then((e) => e.data)
-          .then((e) => {
-            let html = '';
-            e.forEach((item) => {
-              html += `<div><img src="${item.img}"></div>`;
-            });
-            document.querySelector('.brand').innerHTML = html;
-          });
-      })();
-
       countItemCart();
 
       resolve('Load content success!');

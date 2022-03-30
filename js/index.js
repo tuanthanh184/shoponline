@@ -38,101 +38,64 @@ squareBtn.addEventListener('click', () => {
 
 // Get and render Brands
 (function renderBrands() {
-  axios
-    .get('http://localhost/BE/DataList/ProductList.php')
-    .then((e) => e.data)
-    .then((e) => {
-      // Get an object of brand and its quantity
-      let brandList = e.reduce((result, item) => {
-        !result[item.brand]
-          ? (result[item.brand] = 1)
-          : (result[item.brand] += 1);
-        return result;
-      }, {});
-      let htmlBrandList = '';
-      for (const brand in brandList) {
-        htmlBrandList += `<li>
+  axios.get('http://localhost/BE/DataList/ProductList.php').then(({ data }) => {
+    console.log(data);
+    // Get an object of brand and its quantity
+    let brandList = data.reduce((result, item) => {
+      !result[item.brand]
+        ? (result[item.brand] = 1)
+        : (result[item.brand] += 1);
+      return result;
+    }, {});
+    let htmlBrandList = '';
+    for (const brand in brandList) {
+      htmlBrandList += `<li>
             <span class="brand-name">${brand}</span>
             <span>(${brandList[brand]})</span>
             </li>`;
-      }
-      const brandListRender = document.querySelector('.brandlist');
-      brandListRender.innerHTML += htmlBrandList;
-      // Render Products by Brand
-      const listDOM = document.querySelectorAll('.brandlist li');
-      listDOM.forEach((liElement) => {
-        liElement.addEventListener('click', () => {
-          let BrandValDOM = liElement.querySelector('.brand-name').innerText;
-          document.querySelector('.main-title').innerText = BrandValDOM;
-          let filterBrands = e.filter((item) => item.brand === BrandValDOM);
-          renderProducts({
-            renderList: filterBrands,
-            square: '.main-content__square',
-            pillar: '.main-content__pillar',
-          });
-          searchPrice(filterBrands);
-          sortProducts(filterBrands);
+    }
+    const brandListRender = document.querySelector('.brandlist');
+    brandListRender.innerHTML += htmlBrandList;
+    // Render Products by Brand
+    const listDOM = document.querySelectorAll('.brandlist li');
+    listDOM.forEach((liElement) => {
+      liElement.addEventListener('click', () => {
+        let BrandValDOM = liElement.querySelector('.brand-name').innerText;
+        document.querySelector('.main-title').innerText = BrandValDOM;
+        let filterBrands = data.filter((item) => item.brand === BrandValDOM);
+        renderProducts({
+          renderList: filterBrands,
+          square: '.main-content__square',
+          pillar: '.main-content__pillar',
         });
+        searchPrice(filterBrands);
+        sortProducts(filterBrands);
       });
     });
+  });
 })();
 
 // Render Products
 function renderProducts(options) {
   // Square display
-  let htmlSquare = options.renderList.reduce(
-    (html, item) =>
-      html +
-      `<div class="square">
-            <div class="square-img">
-              <img src="${item.src}" />
-              <div class="square-img__blur">
-                <div class="view">
-                <i class="far fa-eye"></i>
-                </div>
-              </div>
-            </div>
-            <div class="square-detail">
-              <div class="square-detail__top">
-                <a href="#" class="product-link product-name-link" productid="${item.id}">${item.name}</a>
-              </div>
-              <div class="square-detail__bottom">
-                <div class="price">$ ${item.price}</div>
-                <div class="d-flex">
-                  <div class="addcart">
-                    <button>Add to cart</button>
-                  </div>
-                  <div class="wishlist" productid="${item.id}">
-                    <i class="far fa-heart" productid="${item.id}"></i>
-                  </div>
-                  <div class="wishlist clicked-wishlist" productid="${item.id}">
-                    <i class="far fa-heart" productid="${item.id}"></i>
-                  </div>
-                  <div class="compare" productid="${item.id}">
-                    <i class="fas fa-retweet"></i>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>`,
-    ''
-  );
-  document.querySelector(options.square).innerHTML = htmlSquare;
-  // Pillar display
-  let htmlPillar = options.renderList.reduce((html, item) => {
-    html += `<div class="pillar">
-        <div class="pillar-img">
-          <img src=${item.src}>
-          <div class="pillar-img__blur">
-            <div class="view productid="${item.id}">
-              <i class="far fa-eye"></i>
+  let htmlSquare = options.renderList.reduce((html, item) => {
+    html += `<div class="square">
+        <div class="square-top">
+          <a href="#" id="${item.id}">
+            <div class="square-img"><img src="${item.src}" /></div>
+            <span>${item.name}</span>
+          </a>
+        </div>
+        <div class="square-bottom">
+          <div class="d-flex justify-content-between">
+            <span class="square-price">$ ${item.price}</span>
+            <div class="d-flex align-items-center">
+              <span class="product-sold">Sold:</span>
+              <span class="product-sold-number">${item.sold}</span>
             </div>
           </div>
-        </div>
-        <div class="pillar_content d-flex flex-column justify-content-between">
-          <div class="pillar-content__top">
-            <a href="#" productid="${item.id}" >${item.name}</a>
-            <div class="pillar_star">`;
+          <div class="d-flex justify-content-between">
+            <div class="rating-star d-flex align-items-center">`;
     for (let i = 0; i < Math.round(item.rating); ++i) {
       html += `<i class="fa fa-star checked"></i>`;
     }
@@ -140,22 +103,52 @@ function renderProducts(options) {
       html += `<i class="fa fa-star"></i>`;
     }
     html += `</div>
-            <div class="pillar_price">
-              <span>$${item.price}</span>
+            <div class="d-flex">
+              <div class="wishlist" productid="${item.id}">
+                <button class="wishlist-btn"><i class="far fa-heart" productid="${item.id}"></i></button>                
+              </div>
+              <div class="compare" productid="${item.id}">
+                <button class="compare-btn"><i class="fas fa-retweet"></i></button>
+              </div>
             </div>
-            <div class="item_pillar_content_detail">
+          </div>
+        </div>
+      </div>`;
+    return html;
+  }, '');
+  document.querySelector(options.square).innerHTML = htmlSquare;
+  // Pillar display
+  let htmlPillar = options.renderList.reduce((html, item) => {
+    html += `<div class="pillar">
+        <div class="pillar-img"><img src=${item.src}></div>
+          <div class="d-flex flex-column justify-content-between">
+            <div class="pillar-content__top">
+              <div><a href="#" productid="${item.id}" >${item.name}</a></div>
+              <div class="rating-star">`;
+    for (let i = 0; i < Math.round(item.rating); ++i) {
+      html += `<i class="fa fa-star checked"></i>`;
+    }
+    for (let i = 0; i < 5 - Math.round(item.rating); ++i) {
+      html += `<i class="fa fa-star"></i>`;
+    }
+    html += `</div>
+            <div class="pillar-price">$${item.price}</div>
+            <div class="pillar-content__detail">
                 <p>${item.detail}</p>
             </div>
           </div>
           <div class="d-flex">
-            <div class="addcart">
-              <button productid="${item.id}">Add to cart</button>
+            <div class="d-flex align-items-center">
+              <span class="product-sold">Sold:</span>
+              <span class="product-sold-number">${item.sold}</span>
             </div>
-            <div class="wishlist productid="${item.id}">
-              <i class="far fa-heart"></i>
-            </div>
-            <div class="compare">
-              <i class="fas fa-retweet"></i>
+            <div class="d-flex">
+              <div class="wishlist" productid="${item.id}">
+                <button class="wishlist-btn"><i class="far fa-heart" productid="${item.id}"></i></button>                
+              </div>
+              <div class="compare" productid="${item.id}">
+                <button class="compare-btn"><i class="fas fa-retweet"></i></button>
+              </div>
             </div>
           </div>
         </div>
@@ -172,49 +165,16 @@ function renderProducts(options) {
   }
 }
 
-axios
-  .get('http://localhost/BE/DataList/ProductList.php')
-  .then((e) => e.data)
-  .then((e) => {
-    renderProducts({
-      renderList: e,
-      square: '.main-content__square',
-      pillar: '.main-content__pillar',
-    });
-    searchProductsByInput(e);
-    searchPrice(e);
-    sortProducts(e);
+axios.get('http://localhost/BE/DataList/ProductList.php').then(({ data }) => {
+  renderProducts({
+    renderList: data,
+    square: '.main-content__square',
+    pillar: '.main-content__pillar',
   });
-
-// Get and render 5 bestseller Items
-(function renderBestSeller(limitItem) {
-  axios
-    .get('http://localhost/BE/DataList/ProductList.php')
-    .then((e) => e.data)
-    .then((e) => {
-      let soldList = e
-        .sort((a, b) => b.sold - a.sold) // Sort item.sold by desc order
-        .slice(0, limitItem); // Get top 5 item.sold
-
-      let htmlBestSeller = soldList.reduce(
-        (html, item) =>
-          html +
-          `<li class="row">
-            <div class="col-4">
-              <a href="./product.html" class="go-to-product" productid="${item.id}"><img src="${item.src}"></a>
-            </div>
-            <div class="col-8">
-              <p>
-                <a href="./product.html" class="go-to-product" productid="${item.id}">${item.name}</a>
-              </p>
-              <p>$${item.price}</p>
-            </div>
-          </li>`,
-        ''
-      );
-      document.querySelector('.bestseller-list').innerHTML = htmlBestSeller;
-    });
-})(5);
+  searchProductsByInput(data);
+  searchPrice(data);
+  sortProducts(data);
+});
 
 // Filter Products by Price
 function searchPrice(productList) {
@@ -302,6 +262,7 @@ function searchProductsByInput(productList) {
     sortProducts(resultList);
   });
 }
+
 var productListToFliter = [];
 var productList = [];
 
@@ -453,3 +414,7 @@ function renderProductsByCategories(cateid) {
       renderContent(e.data);
     });
 }
+
+axios
+  .get('https://thanh-shop-api-demo.herokuapp.com/data')
+  .then(({ data }) => console.log(data));
