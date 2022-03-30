@@ -45,17 +45,6 @@
   align-items: center;
 }
 
-.nav-mid > ul > li > i {
-  margin-left: 5px;
-  margin-bottom: 8px;
-}
-
-/* Drop down nav */
-
-.nav-mid > ul > li {
-  position: relative;
-}
-
 .nav-mid > ul > li:hover {
   color: var(--primary_color);
 }

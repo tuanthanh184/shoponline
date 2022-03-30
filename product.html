@@ -17,107 +17,26 @@
       integrity="sha384-AYmEC3Yw5cVb3ZcuHtOA93w35dYTsvhLPVnYs9eStHfGJvOvKxVfELGroGkvsg+p"
       crossorigin="anonymous"
     />
-    <link rel="stylesheet" href="../css/alert.css" />
-    <link rel="stylesheet" href="../css/product.css" />
-    <link rel="stylesheet" href="../css/compare.css" />
+    <link rel="stylesheet" href="./css/alert.css" />
+    <link rel="stylesheet" href="./css/product.css" />
+    <link rel="stylesheet" href="./css/compare.css" />
     <script src="https://cdn.jsdelivr.net/npm/axios/dist/axios.min.js"></script>
   </head>
 
   <body>
     <div id="alert-all-message"></div>
 
-    <div data-include="header"></div>
+    <header></header>
 
     <main>
       <div class="container">
-        <!-- <div class="bread-crumb">
-          <ul>
-            <li>
-              <a href="../index.html" class="product-link">Home</a>
-            </li>
-            <li>
-              <i class="fas fa-chevron-right"></i>
-            </li>
-            <li>
-              <a href="./products.html" class="product-link">Products</a>
-            </li>
-            <li>
-              <i class="fas fa-chevron-right"></i>
-            </li>
-            <li>
-              <span class="bread-crumb__productname"></span>
-            </li>
-          </ul>
-        </div> -->
         <div class="main-content">
-          <!-- Leftside -->
-          <div class="leftside">
-            <div class="leftside-bestsellers">
-              <div class="leftside-title">
-                <h2><i class="far fa-gem"></i>Best Sellers</h2>
-              </div>
-              <ul id="render-leftside-bestsellers"></ul>
-            </div>
-          </div>
-
           <!-- Rightside -->
           <div class="rightside">
             <div class="product-detail"></div>
-            <div class="tabs">
-              <input
-                type="radio"
-                name="tabs"
-                id="description-tab"
-                checked="checked"
-              />
-              <label for="description-tab">Description</label>
-              <div class="tab">
-                <h2>Description</h2>
-                <p class="desc-text"></p>
-              </div>
-
-              <input type="radio" name="tabs" id="review-tab" />
-              <label for="review-tab">Review</label>
-              <div class="tab">
-                <h2>Reviews</h2>
-                <div class="no-review">
-                  <p>There are no review yet!</p>
-                  <p>
-                    Be the first to review "<span
-                      class="product-name__review"
-                    ></span
-                    >".
-                  </p>
-                </div>
-                <div class="no-login">
-                  <p>
-                    You must be <a href="./login.html">logged in</a> to post a
-                    review.
-                  </p>
-                </div>
-                <div>
-                  <div class="reviews"></div>
-                </div>
-                <div class="already-logged-in">
-                  <p>Add a review</p>
-                  <b>Your rating</b>
-                  <div class="ratable">
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                    <i class="fa fa-star"></i>
-                  </div>
-                  <form id="form-review" action="" method="post">
-                    <textarea
-                      name=""
-                      id="review-text"
-                      placeholder="Write your review here!..."
-                    ></textarea>
-                    <input type="submit" value="Submit" />
-                  </form>
-                </div>
-              </div>
+            <div class="description-detail">
+              <h4>Description</h4>
+              <p class="desc-text"></p>
             </div>
           </div>
         </div>
@@ -159,7 +78,7 @@
       <div class="compare-right"></div>
       <div class="compare-close"></div>
     </div>
-    <div data-include="footer"></div>
+    <footer></footer>
 
     <script
       src="https://cdn.jsdelivr.net/npm/@popperjs/core@2.9.2/dist/umd/popper.min.js"
@@ -172,6 +91,6 @@
       crossorigin="anonymous"
     ></script>
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.11.0/jquery.min.js"></script>
-    <script type="module" src="../js/product.js"></script>
+    <script type="module" src="./js/product.js"></script>
   </body>
 </html>

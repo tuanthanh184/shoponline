@@ -206,21 +206,22 @@ main {
   color: #d7182a;
 }
 .wishlist-btn:hover,
-.compare-btn:hover {
+.compare-btn:hover,
+.clicked {
   background-color: #c01526;
   transition: all 0.3s;
-  cursor: pointer;
 }
 .wishlist:hover i,
-.compare:hover i {
+.compare:hover i,
+.clicked i {
   color: #fff;
 }
-.clicked-wishlist {
-  background-color: #d7182a !important;
-  color: white;
-  display: none;
+.clicked:hover {
+  background-color: transparent;
 }
-
+.clicked:hover i {
+  color: #d7182a;
+}
 /* Pillar Display */
 .main-content__pillar {
   display: none;

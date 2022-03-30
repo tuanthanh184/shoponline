@@ -1,7 +1,7 @@
 import { componentHTML } from './module/components.js';
 import { header } from './module/header.js';
 import { alertMess } from './module/alert.js';
-import { multiPageItems } from './module/multipage.js';
+import { pagination } from './module/pagination.js';
 
 // Square display and Pillar display
 const squareBtn = document.querySelector('.square-btn');
@@ -9,70 +9,81 @@ const pillarBtn = document.querySelector('.pillar-btn');
 const limitSizeSquare = 15;
 const limitSizePillar = 5;
 
-// Show Pillar hide Square
-pillarBtn.addEventListener('click', () => {
-  document.querySelector('.main-content__square').classList.add('hide');
-  document.querySelector('.main-content__pillar').classList.add('show');
-  if (squareBtn.classList.contains('active')) {
-    squareBtn.classList.remove('active');
-    pillarBtn.classList.add('active');
-    multiPageItems('.pillar', limitSizePillar);
-  }
-});
-
-// Show Square hide Pillar
-squareBtn.addEventListener('click', () => {
-  document.querySelector('.main-content__square').classList.remove('hide');
-  document.querySelector('.main-content__pillar').classList.remove('show');
-  if (pillarBtn.classList.contains('active')) {
-    pillarBtn.classList.remove('active');
-    squareBtn.classList.add('active');
-    multiPageItems('.square', limitSizeSquare);
-  }
-});
-
 (async () => {
   await componentHTML();
   await header();
 })();
 
+axios.get('https://thanh-shop-api-demo.herokuapp.com/data').then(({ data }) => {
+  renderProducts({
+    renderList: data,
+    square: '.main-content__square',
+    pillar: '.main-content__pillar',
+  });
+  // Show Pillar hide Square
+  pillarBtn.addEventListener('click', () => {
+    document.querySelector('.main-content__square').classList.add('hide');
+    document.querySelector('.main-content__pillar').classList.add('show');
+    if (squareBtn.classList.contains('active')) {
+      squareBtn.classList.remove('active');
+      pillarBtn.classList.add('active');
+      pagination('.pillar', limitSizePillar);
+    }
+  });
+
+  // Show Square hide Pillar
+  squareBtn.addEventListener('click', () => {
+    document.querySelector('.main-content__square').classList.remove('hide');
+    document.querySelector('.main-content__pillar').classList.remove('show');
+    if (pillarBtn.classList.contains('active')) {
+      pillarBtn.classList.remove('active');
+      squareBtn.classList.add('active');
+      pagination('.square', limitSizeSquare);
+    }
+  });
+  searchProductsByInput(data);
+  searchPrice(data);
+  sortProducts(data);
+});
+
 // Get and render Brands
 (function renderBrands() {
-  axios.get('http://localhost/BE/DataList/ProductList.php').then(({ data }) => {
-    console.log(data);
-    // Get an object of brand and its quantity
-    let brandList = data.reduce((result, item) => {
-      !result[item.brand]
-        ? (result[item.brand] = 1)
-        : (result[item.brand] += 1);
-      return result;
-    }, {});
-    let htmlBrandList = '';
-    for (const brand in brandList) {
-      htmlBrandList += `<li>
+  axios
+    .get('https://thanh-shop-api-demo.herokuapp.com/data')
+    .then(({ data }) => {
+      // Get an object of brand and its quantity
+      let brandList = data.reduce((result, item) => {
+        !result[item.brand]
+          ? (result[item.brand] = 1)
+          : (result[item.brand] += 1);
+        return result;
+      }, {});
+      let htmlBrandList = '';
+      for (const brand in brandList) {
+        htmlBrandList += `<li>
             <span class="brand-name">${brand}</span>
             <span>(${brandList[brand]})</span>
             </li>`;
-    }
-    const brandListRender = document.querySelector('.brandlist');
-    brandListRender.innerHTML += htmlBrandList;
-    // Render Products by Brand
-    const listDOM = document.querySelectorAll('.brandlist li');
-    listDOM.forEach((liElement) => {
-      liElement.addEventListener('click', () => {
-        let BrandValDOM = liElement.querySelector('.brand-name').innerText;
-        document.querySelector('.main-title').innerText = BrandValDOM;
-        let filterBrands = data.filter((item) => item.brand === BrandValDOM);
-        renderProducts({
-          renderList: filterBrands,
-          square: '.main-content__square',
-          pillar: '.main-content__pillar',
+      }
+      const brandListRender = document.querySelector('.brandlist');
+      brandListRender.innerHTML += htmlBrandList;
+      // Render Products by Brand
+      const listDOM = document.querySelectorAll('.brandlist li');
+      listDOM.forEach((liElement) => {
+        liElement.addEventListener('click', () => {
+          let BrandValDOM = liElement.querySelector('.brand-name').innerText;
+          document.querySelector('.main-title').innerText = BrandValDOM;
+          let filterBrands = data.filter((item) => item.brand === BrandValDOM);
+          renderProducts({
+            renderList: filterBrands,
+            square: '.main-content__square',
+            pillar: '.main-content__pillar',
+          });
+          searchPrice(filterBrands);
+          sortProducts(filterBrands);
         });
-        searchPrice(filterBrands);
-        sortProducts(filterBrands);
       });
     });
-  });
 })();
 
 // Render Products
@@ -158,23 +169,12 @@ function renderProducts(options) {
   document.querySelector(options.pillar).innerHTML = htmlPillar;
 
   if (squareBtn.classList.contains('active')) {
-    multiPageItems('.square', limitSizeSquare);
+    pagination('.square', limitSizeSquare);
   }
   if (pillarBtn.classList.contains('active')) {
-    multiPageItems('.pillar', limitSizePillar);
+    pagination('.pillar', limitSizePillar);
   }
 }
-
-axios.get('http://localhost/BE/DataList/ProductList.php').then(({ data }) => {
-  renderProducts({
-    renderList: data,
-    square: '.main-content__square',
-    pillar: '.main-content__pillar',
-  });
-  searchProductsByInput(data);
-  searchPrice(data);
-  sortProducts(data);
-});
 
 // Filter Products by Price
 function searchPrice(productList) {
@@ -265,22 +265,6 @@ function searchProductsByInput(productList) {
 
 var productListToFliter = [];
 var productList = [];
-
-// Làm sự kiện click vào chọn trang
-function clickBtnChoosePage(e) {
-  let renderList = [...productListToFliter];
-
-  let data = [];
-  let productsPerPage = document.getElementById('show_items').value;
-  for (let i = 0; i < e; i++) {
-    data = renderList.splice(0, productsPerPage);
-  }
-  renderContent(productListToFliter, data);
-  window.scrollTo({
-    top: 400,
-    behavior: 'smooth',
-  });
-}
 
 // Nut chuyen huong den product.html
 function viewButton() {
@@ -397,24 +381,3 @@ if (localStorage.getItem('brandid')) {
   // } else {
   //   asyncCall();
 }
-
-// Render product by Categories
-function renderProductsByCategories(cateid) {
-  localStorage.setItem('currentPage', 1);
-
-  let data = new FormData();
-  data.append('cateid', cateid);
-  axios
-    .post('http://localhost/be/DataList/ProductFilters.php', data)
-    .then((e) => {
-      document.querySelector('.main-content__square').innerHTML = '';
-      document.querySelector('.main-content__pillar').innerHTML = '';
-      document.querySelector('.number-pagination').innerHTML = '';
-      // document.querySelector(".SideBar_bestseller_content").innerHTML = '';
-      renderContent(e.data);
-    });
-}
-
-axios
-  .get('https://thanh-shop-api-demo.herokuapp.com/data')
-  .then(({ data }) => console.log(data));
