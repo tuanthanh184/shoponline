@@ -44,6 +44,7 @@ axios.get('https://thanh-shop-api-demo.herokuapp.com/data').then(({ data }) => {
   searchProductsByInput(data);
   searchPrice(data);
   sortProducts(data);
+  showDetailProduct(data);
 });
 
 // Get and render Brands
@@ -81,6 +82,7 @@ axios.get('https://thanh-shop-api-demo.herokuapp.com/data').then(({ data }) => {
           });
           searchPrice(filterBrands);
           sortProducts(filterBrands);
+          showDetailProduct(filterBrands);
         });
       });
     });
@@ -92,10 +94,8 @@ function renderProducts(options) {
   let htmlSquare = options.renderList.reduce((html, item) => {
     html += `<div class="square">
         <div class="square-top">
-          <a href="#" id="${item.id}">
             <div class="square-img"><img src="${item.src}" /></div>
             <span>${item.name}</span>
-          </a>
         </div>
         <div class="square-bottom">
           <div class="d-flex justify-content-between">
@@ -114,13 +114,8 @@ function renderProducts(options) {
       html += `<i class="fa fa-star"></i>`;
     }
     html += `</div>
-            <div class="d-flex">
-              <div class="wishlist" productid="${item.id}">
-                <button class="wishlist-btn"><i class="far fa-heart" productid="${item.id}"></i></button>                
-              </div>
-              <div class="compare" productid="${item.id}">
-                <button class="compare-btn"><i class="fas fa-retweet"></i></button>
-              </div>
+            <div class="detail">
+              <button class="detail-btn btn" id="${item.id}">Detail</button>                
             </div>
           </div>
         </div>
@@ -145,21 +140,16 @@ function renderProducts(options) {
     html += `</div>
             <div class="pillar-price">$${item.price}</div>
             <div class="pillar-content__detail">
-                <p>${item.detail}</p>
+                <span>${item.detail}</span>
             </div>
           </div>
           <div class="d-flex">
-            <div class="d-flex align-items-center">
+            <div class="d-flex align-items-center mr-3">
               <span class="product-sold">Sold:</span>
               <span class="product-sold-number">${item.sold}</span>
             </div>
-            <div class="d-flex">
-              <div class="wishlist" productid="${item.id}">
-                <button class="wishlist-btn"><i class="far fa-heart" productid="${item.id}"></i></button>                
-              </div>
-              <div class="compare" productid="${item.id}">
-                <button class="compare-btn"><i class="fas fa-retweet"></i></button>
-              </div>
+            <div class="detail">
+              <button class="detail-btn btn" id="${item.id}">Detail</button>                
             </div>
           </div>
         </div>
@@ -195,6 +185,7 @@ function searchPrice(productList) {
         square: '.main-content__square',
         pillar: '.main-content__pillar',
       });
+      showDetailProduct(productList);
     }
   });
 }
@@ -214,6 +205,7 @@ function sortProducts(productList) {
           square: '.main-content__square',
           pillar: '.main-content__pillar',
         });
+        showDetailProduct(productList);
         break;
       case 'descending-name':
         productList.sort((a, b) => {
@@ -224,6 +216,7 @@ function sortProducts(productList) {
           square: '.main-content__square',
           pillar: '.main-content__pillar',
         });
+        showDetailProduct(productList);
         break;
       case 'ascending-price':
         productList.sort((a, b) => parseInt(a.price) - parseInt(b.price));
@@ -232,6 +225,7 @@ function sortProducts(productList) {
           square: '.main-content__square',
           pillar: '.main-content__pillar',
         });
+        showDetailProduct(productList);
         break;
       case 'descending-price':
         productList.sort((a, b) => parseInt(b.price) - parseInt(a.price));
@@ -240,6 +234,7 @@ function sortProducts(productList) {
           square: '.main-content__square',
           pillar: '.main-content__pillar',
         });
+        showDetailProduct(productList);
         break;
       default:
         break;
@@ -247,6 +242,7 @@ function sortProducts(productList) {
   });
 }
 
+// Search Products
 function searchProductsByInput(productList) {
   const searchInput = document.querySelector('.search-box-input');
   searchInput.addEventListener('input', (event) => {
@@ -260,42 +256,111 @@ function searchProductsByInput(productList) {
     });
     searchPrice(resultList);
     sortProducts(resultList);
+    showDetailProduct(resultList);
   });
 }
 
-var productListToFliter = [];
+function showDetailProduct(productList) {
+  const detailBtns = document.querySelectorAll('.detail-btn');
+  detailBtns.forEach((detailBtn) => {
+    detailBtn.addEventListener('click', (e) => {
+      let data = productList.find((product) => product.id === e.target.id);
+      document.querySelector('.main-content').style.display = 'none';
+      let html = '';
+      html += `
+      <div class="product-detail__top">
+        <div class="image">
+          <img src="${data.src}" />
+        </div>
+        <div class="product-info">
+          <div class="product-info__top">
+            <div class="product-info__top-head">
+              <h1 class="h5">${data.name}</h1>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="rating-star">`;
+      for (let i = 0; i < Math.round(data.rating); ++i) {
+        html += `<i class="fa fa-star checked"></i>`;
+      }
+      for (let i = 0; i < 5 - Math.round(data.rating); ++i) {
+        html += `<i class="fa fa-star"></i>`;
+      }
+      html += `</div>
+              <div>
+                <span class="product-sold">Sold:</span>
+                <span class="product-sold-number">${data.sold}</span>
+              </div>
+            </div>
+            <div class="detail-price">$ ${data.price}</div>
+            <div class="status">`;
+      if (parseInt(data.quantity) > parseInt(data.sold)) {
+        html += `<span class="text-success">In Stock</span>`;
+      } else {
+        html += `<span class="text-danger">Out Of Stock</span>`;
+      }
+      html += `</div>
+          </div>
+          <div class="product-info__bottom">
+            <div class="d-flex">
+              <div class="quantity-modifier">
+                <input type="button" value="-" class="minus">
+                <input type="number" value="1" class="quantity">
+                <input type="button" value="+" class="plus">
+              </div>
+              <div class="addcart">
+                <button class="addcart-btn btn">Add to cart</button>
+              </div>
+            </div>
+            <div class="d-flex justify-content-between">
+              <div class="brand-detail">
+                <span class="title">Brand: </span>
+                <span>${data.brand}</span>
+              </div>
+              <div class="made-in">
+                <span class="title">Made In:</span>
+                <span>${data.country}</span>
+              </div>
+            </div>
+            <div class="social d-flex">
+              <span class="title">Share: </span>
+              <a href="https://www.facebook.com/" class="social-link">
+                <i class="fab fa-facebook-f"></i>
+              </a>
+              <a href="https://twitter.com/" class="social-link">
+                <i class="fab fa-twitter"></i>
+              </a>
+              <a href="https://www.instagram.com/" class="social-link">
+                <i class="fab fa-instagram"></i>
+              </a>
+            </div>
+          </div>
+        </div>
+      </div>
+      <div class="product-detail__bottom">
+        <h4>Description</h4>
+        <p class="text-justify">${data.detail}</p>
+      </div>`;
+      document.querySelector('.product-detail').innerHTML = html;
+      window.scrollTo({
+        top: 250,
+        behavior: 'smooth',
+      });
+      const backBtn = document.querySelector('.back-btn');
+      backBtn.classList.remove('d-none');
+      backBtn.addEventListener('click', (e) => {
+        document.querySelector('.product-detail').innerHTML = '';
+        document.querySelector('.main-content').style.display = 'block';
+        e.target.classList.add('d-none');
+      });
+    });
+  });
+}
 var productList = [];
 
 // Nut chuyen huong den product.html
 function viewButton() {
   return new Promise((rs) => {
     setTimeout(() => {
-      // click best sale to product
-      let a = document.querySelectorAll('.go-to-product');
-      a.forEach((item) => {
-        item.onclick = () => {
-          localStorage.setItem('productid', item.getAttribute('productid'));
-        };
-      });
-
-      // click view button to product
-      let viewButton = document.querySelectorAll('.add_view');
-      viewButton.forEach((item) => {
-        item.onclick = () => {
-          localStorage.setItem('productid', item.getAttribute('productid'));
-          window.location = './product.html';
-        };
-      });
-
-      // click name to product
-      let nameButton = document.querySelectorAll('.title');
-      nameButton.forEach((item) => {
-        item.onclick = () => {
-          window.location = './product.html';
-          localStorage.setItem('productid', item.getAttribute('productid'));
-        };
-      });
-
       //. Add to cart
       let addCart = document.querySelectorAll('.add_cart');
       addCart.forEach((item) => {
