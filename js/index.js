@@ -1,5 +1,5 @@
 import { componentHTML } from './module/components.js';
-import { header } from './module/header.js';
+import { header, updateCartNoti } from './module/header.js';
 import { alertMess } from './module/alert.js';
 import { pagination } from './module/pagination.js';
 
@@ -352,97 +352,78 @@ function showDetailProduct(productList) {
         document.querySelector('.main-content').style.display = 'block';
         e.target.classList.add('d-none');
       });
+      counter();
+      addToCart(data);
     });
   });
 }
-var productList = [];
 
-// Nut chuyen huong den product.html
-function viewButton() {
-  return new Promise((rs) => {
-    setTimeout(() => {
-      //. Add to cart
-      let addCart = document.querySelectorAll('.add_cart');
-      addCart.forEach((item) => {
-        item.onclick = () => {
-          productList.filter((i) => {
-            if (i.id == item.getAttribute('productid')) {
-              let data = new FormData();
-              data.append('userid', localStorage.getItem('userid'));
-              data.append('productid', i.id);
-              data.append('quantity', 1);
-              data.append('price', i.price);
-              data.append('img', i.src);
-              axios
-                .post('http://localhost/be/Checkout/AddToCart.php', data)
-                .then((e) => e.data)
-                .then((e) => {
-                  console.log(e);
-                  e == 'Add Success'
-                    ? alertMess(e)
-                    : alertMess('Error', 'Error');
-                });
-              return;
-            }
-          });
-        };
-      });
-      //. Wishlist
-      let addWishlist = document.querySelectorAll('.add_tym');
-      addWishlist.forEach((item) => {
-        item.onclick = () => {
-          let data = new FormData();
-          data.append('userid', localStorage.getItem('userid'));
-          data.append('productid', item.getAttribute('productid'));
-          if (item.className.includes('clicked-wishlist')) {
-            axios
-              .post('http://localhost/be/Wishlist/delete.php', data)
-              .then((e) => {
-                if (e.data == 'Delete Succes') {
-                  item.className = item.className.replace(
-                    'clicked-wishlist',
-                    ''
-                  );
-                }
-              });
-          } else {
-            axios
-              .post('http://localhost/be/Wishlist/Add.php', data)
-              .then((e) => {
-                if (e.data == 'Add Succes') {
-                  item.className += ' clicked-wishlist';
-                }
-              });
-          }
-        };
-      });
+// Add and Minus Quantity of Product
+function counter() {
+  const plusBtn = document.querySelector('.plus');
+  const minusBtn = document.querySelector('.minus');
+  const quantityInput = document.querySelector('.quantity');
+  plusBtn.addEventListener('click', (e) => {
+    let quantity = e.target.previousElementSibling;
+    let newValue = parseInt(quantity.value) + 1;
+    quantity.value = newValue;
+  });
+  minusBtn.addEventListener('click', (e) => {
+    let quantity = e.target.nextElementSibling;
+    let newValue = parseInt(quantity.value) - 1;
+    if (newValue > 0) {
+      quantity.value = newValue;
+    }
+  });
+  quantityInput.addEventListener('input', (e) => e.target.value);
+}
 
-      rs();
-    }, 1000);
+// Add to cart Button
+function addToCart(dataProduct) {
+  const addToCartBtn = document.querySelector('.addcart-btn');
+  addToCartBtn.addEventListener('click', () => {
+    axios
+      .get('https://thanh-shop-api-demo.herokuapp.com/cartlist')
+      .then(({ data }) => {
+        // Check if product is already existed in cart
+        let existedProduct = data.find(
+          (productCartlist) => productCartlist.productID == dataProduct.id
+        );
+        if (existedProduct) {
+          axios
+            .put(
+              `https://thanh-shop-api-demo.herokuapp.com/cartlist/${existedProduct.id}`,
+              {
+                productID: dataProduct.id,
+                name: dataProduct.name,
+                src: dataProduct.src,
+                quantity:
+                  parseInt(existedProduct.quantity) +
+                  parseInt(document.querySelector('.quantity').value),
+                price: dataProduct.price,
+              }
+            )
+            .then(() => {
+              document.querySelector('.quantity').value = 1;
+            });
+        } else {
+          axios
+            .post('https://thanh-shop-api-demo.herokuapp.com/cartlist', {
+              productID: dataProduct.id,
+              name: dataProduct.name,
+              src: dataProduct.src,
+              quantity: parseInt(document.querySelector('.quantity').value),
+              price: dataProduct.price,
+            })
+            .then(({ status }) => alertMess(status))
+            .then(() => updateCartNoti())
+            .then(() => {
+              document.querySelector('.quantity').value = 1;
+            });
+        }
+      });
+    //
   });
 }
 
-let data = new FormData();
-data.append('userid', localStorage.getItem('userid'));
-axios
-  .post('http://localhost/be/Wishlist/list.php', data)
-  .then((e) => e.data)
-  .then((e) => {
-    localStorage.setItem('wishlist', e);
-  });
-
-if (localStorage.getItem('brandid')) {
-  renderProductsByBrands(localStorage.getItem('brandid'));
-  setTimeout(() => {
-    viewButton();
-    // localStorage.removeItem('brandid');
-  }, 1000);
-} else if (localStorage.getItem('cateid')) {
-  renderProductsByCategories(localStorage.getItem('cateid'));
-  setTimeout(() => {
-    viewButton();
-    // localStorage.removeItem('cateid');
-  }, 1000);
-  // } else {
-  //   asyncCall();
-}
+export { counter };

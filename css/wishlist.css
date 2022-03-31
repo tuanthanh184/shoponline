@@ -1,22 +1,8 @@
-@import './general.css';
-@import './header.css';
-@import './footer.css';
-
-/* --------------------------------------------------------  Section -------------------------------------------------------- */
-
-.wrapper {
-  background-color: #f2f2f2;
-
-  margin-bottom: 30px;
-  padding: 20px;
-  border-radius: 10px;
-}
-
-#contents table {
+table {
   text-align: center;
   color: #554d4d;
   width: 100%;
-  line-height: 2.5;
+  line-height: 40px;
   border-collapse: 0;
 }
 
@@ -25,18 +11,52 @@ td {
   border: 1px solid black;
 }
 
-#btn-delete {
+td img {
+  width: 180px;
+  height: 180px;
+  object-fit: contain;
+  margin: 10px;
+}
+
+tr td:nth-child(1) {
+  width: 200px;
+}
+tr td:nth-child(2) {
+  width: 40%;
+}
+
+.edit-qty {
+  font-size: 16px;
+  display: flex;
+  justify-content: center;
+}
+
+.edit-qty input {
+  width: 32px;
+  height: 32px;
+  border: none;
+  outline: none;
   text-align: center;
 }
 
-#btn-delete > button {
-  border: none;
-  font-size: 30px;
+.edit-qty .quantity {
+  background-color: transparent;
+  width: 50px;
 }
 
-td img {
-  width: 150px;
-  height: 150px;
-  object-fit: contain;
-  margin: 20px;
+.edit-qty .minus,
+.edit-qty .plus {
+  background-color: #d7182a;
+  color: #fff;
+  line-height: 32px;
+}
+
+.edit-qty .minus:hover,
+.edit-qty .plus:hover {
+  background-color: #000;
+}
+
+.btns button {
+  width: 40px;
+  height: 40px;
 }

@@ -40,88 +40,91 @@
     <!-- Main Page -->
     <main>
       <div class="container">
-        <div class="row">
-          <!-- Leftside -->
-          <div class="sidebar col-3">
-            <div class="sidebar-price">
-              <div class="sidebar-title">
-                <i class="far fa-gem"></i>
-                <h5 class="mb-0">PRICE</h5>
-              </div>
-              <div class="sidebar-filter__content">
-                <small class="d-block mt-3 text-danger"></small>
-                <div class="d-flex mt-3 justify-content-between">
-                  <input type="number" id="min-price" placeholder="Min" />
-                  <input type="number" id="max-price" placeholder="Max" />
+        <div id="main">
+          <div class="row">
+            <!-- Leftside -->
+            <div class="sidebar col-3">
+              <div class="sidebar-price">
+                <div class="sidebar-title">
+                  <i class="far fa-gem"></i>
+                  <h5 class="mb-0">PRICE</h5>
                 </div>
-                <div class="my-3">
-                  <button class="btn btn-dark search-price">FILTER</button>
+                <div class="sidebar-filter__content">
+                  <small class="d-block mt-3 text-danger"></small>
+                  <div class="d-flex mt-3 justify-content-between">
+                    <input type="number" id="min-price" placeholder="Min" />
+                    <input type="number" id="max-price" placeholder="Max" />
+                  </div>
+                  <div class="my-3">
+                    <button class="btn btn-dark search-price">FILTER</button>
+                  </div>
                 </div>
               </div>
-            </div>
-            <ul class="sidebar-brand">
-              <div class="sidebar-title">
-                <i class="far fa-gem"></i>
-                <h5 class="mb-0">BRAND</h5>
-              </div>
-              <ul class="brandlist"></ul>
-            </ul>
-          </div>
-
-          <!-- Products -->
-          <div class="rightside col-9">
-            <div class="content-slider">
-              <img src="./image/slider.jpg" />
-            </div>
-
-            <div class="search-box">
-              <i class="fas fa-search"></i>
-              <input type="text" class="search-box-input" />
-            </div>
-
-            <div class="d-flex justify-content-between">
-              <h4 class="main-title">PRODUCTS</h4>
-              <button class="btn btn-dark back-btn d-none">
-                &lt;&lt; Back
-              </button>
-            </div>
-
-            <div class="main-content">
-              <div class="main-content__options">
-                <div class="display-btns">
-                  <button class="square-btn active">
-                    <i class="fas fa-th-large"></i>
-                  </button>
-                  <button class="pillar-btn">
-                    <i class="fas fa-bars"></i>
-                  </button>
+              <ul class="sidebar-brand">
+                <div class="sidebar-title">
+                  <i class="far fa-gem"></i>
+                  <h5 class="mb-0">BRAND</h5>
                 </div>
-                <select class="sort-products">
-                  <option value="">Sort by</option>
-                  <option value="ascending-name">Name (A to Z)</option>
-                  <option value="descending-name">Name (Z to A)</option>
-                  <option value="ascending-price">Price ascending</option>
-                  <option value="descending-price">Price descending</option>
-                </select>
+                <ul class="brandlist"></ul>
+              </ul>
+            </div>
+
+            <!-- Products -->
+            <div class="rightside col-9">
+              <div class="content-slider">
+                <img src="./image/slider.jpg" />
               </div>
 
-              <div class="main-content__square"></div>
+              <div class="search-box">
+                <i class="fas fa-search"></i>
+                <input type="text" class="search-box-input" />
+              </div>
 
-              <div class="main-content__pillar"></div>
-
-              <div class="pagination-mode">
-                <button class="prev">
-                  <i class="fas fa-caret-left"></i>
-                </button>
-                <div class="pagination"></div>
-                <button class="next">
-                  <i class="fas fa-caret-right"></i>
+              <div class="d-flex justify-content-between">
+                <h4 class="main-title">PRODUCTS</h4>
+                <button class="btn btn-dark back-btn d-none">
+                  &lt;&lt; Back
                 </button>
               </div>
+
+              <div class="main-content">
+                <div class="main-content__options">
+                  <div class="display-btns">
+                    <button class="square-btn active">
+                      <i class="fas fa-th-large"></i>
+                    </button>
+                    <button class="pillar-btn">
+                      <i class="fas fa-bars"></i>
+                    </button>
+                  </div>
+                  <select class="sort-products">
+                    <option value="">Sort by</option>
+                    <option value="ascending-name">Name (A to Z)</option>
+                    <option value="descending-name">Name (Z to A)</option>
+                    <option value="ascending-price">Price ascending</option>
+                    <option value="descending-price">Price descending</option>
+                  </select>
+                </div>
+
+                <div class="main-content__square"></div>
+
+                <div class="main-content__pillar"></div>
+
+                <div class="pagination-mode">
+                  <button class="prev">
+                    <i class="fas fa-caret-left"></i>
+                  </button>
+                  <div class="pagination"></div>
+                  <button class="next">
+                    <i class="fas fa-caret-right"></i>
+                  </button>
+                </div>
+              </div>
+              <div class="product-detail"></div>
             </div>
-            <div class="product-detail"></div>
           </div>
         </div>
+        <div id="cartlist"></div>
       </div>
     </main>
 

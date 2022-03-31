@@ -2,11 +2,13 @@
 @import './footer.css';
 @import './general.css';
 @import './alert.css';
+@import './wishlist.css';
 
 /* Leftside */
 
 main {
   margin-top: 100px;
+  margin-bottom: 30px;
 }
 
 .sidebar {
@@ -274,7 +276,6 @@ main {
 .pagination-mode {
   display: flex;
   justify-content: center;
-  margin-bottom: 30px;
 }
 .pagination-mode button {
   border: none;
